@@ -1,0 +1,13 @@
+# Classic Raid Tools API
+!! WIP !!  
+
+## Env
+- PORT
+- MONGO_URL
+- JWT_SECRET
+- DISCORD_CLIENT_ID
+- DISCORD_CLIENT_SECRET
+- DISCORD_REDIRECT_URI
+- GITHUB_CLIENT_ID
+- GITHUB_CLIENT_SECRET
+http://localhost:8080/auth-github
