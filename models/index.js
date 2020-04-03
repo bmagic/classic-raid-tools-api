@@ -2,10 +2,8 @@ const mongoose = require('mongoose')
 
 const userSchema = new mongoose.Schema({
   email: { type: String, index: { unique: true } },
-  username: { type: String },
-  discordId: { type: Number, index: true },
-  githubId: { type: Number, index: true },
-  password: { type: String },
+  discordId: { type: Number, index: { unique: true } },
+  githubId: { type: Number, index: { unique: true } },
   salt: { type: String },
   roles: [{ type: String }]
 })
