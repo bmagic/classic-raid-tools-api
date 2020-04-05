@@ -31,9 +31,17 @@ const characterSchema = new mongoose.Schema({
 })
 const Character = mongoose.model('Character', characterSchema)
 
+const raidSchema = new mongoose.Schema({
+  date: { type: Date, index: true, required: true },
+  name: { type: String },
+  instance: { type: String, required: true }
+})
+const Raid = mongoose.model('Raid', raidSchema)
+
 module.exports = {
   RefreshToken,
   Item,
   Character,
-  User
+  User,
+  Raid
 }
