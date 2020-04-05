@@ -4,4 +4,7 @@ const User = require('../controllers/user')
 const Auth = require('../controllers/auth')
 
 router.get('/', Auth.authenticate, User.getUser)
+router.get('/characters', Auth.authenticate, User.getCharacters)
+router.post('/characters', Auth.authenticate, User.createCharacter)
+router.del('/characters/:id', Auth.authenticate, User.deleteCharacter)
 module.exports = router.routes()

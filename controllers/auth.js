@@ -2,9 +2,8 @@ const { validateJWT } = require('../lib/jwt')
 async function authenticate (ctx, next, role) {
   if (ctx.headers.authorization) {
     const token = ctx.headers.authorization.split(' ')[1]
-
     try {
-      const data = validateJWT(token)
+      const data = validateJWT(token, '1 sec')
       ctx.user = data
 
       if (role && data.roles && !data.roles.includes(role)) {

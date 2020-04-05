@@ -5,7 +5,6 @@ async function getItems (ctx) {
   if (ctx.request.query.character) {
     filter.character = ctx.request.query.character
   }
-  console.log(filter)
   const items = await Item.find(filter).sort({ date: -1 })
   ctx.ok(items)
 }

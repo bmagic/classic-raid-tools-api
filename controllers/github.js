@@ -72,7 +72,7 @@ async function auth (ctx) {
   }
 
   /** Generate JWT **/
-  const token = generateJWT({ id: user._id, roles: user.roles })
+  const token = generateJWT({ id: user._id, roles: user.roles }, '1 min')
 
   ctx.ok({ token: token })
 }

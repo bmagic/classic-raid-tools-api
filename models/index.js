@@ -1,10 +1,16 @@
 const mongoose = require('mongoose')
 
+const refreshTokenSchema = new mongoose.Schema({
+  userId: { type: mongoose.ObjectId, required: true },
+  value: { type: String, index: true, required: true },
+  date: { type: Date, index: { expires: '48h' }, required: true }
+})
+const RefreshToken = mongoose.model('RefreshToken', refreshTokenSchema)
+
 const userSchema = new mongoose.Schema({
-  email: { type: String, index: { unique: true } },
+  email: { type: String, index: { unique: true }, required: true },
   discordId: { type: Number, index: { unique: true } },
   githubId: { type: Number, index: { unique: true } },
-  salt: { type: String },
   roles: [{ type: String }]
 })
 const User = mongoose.model('User', userSchema)
@@ -18,11 +24,15 @@ const itemSchema = new mongoose.Schema({
 const Item = mongoose.model('Item', itemSchema)
 
 const characterSchema = new mongoose.Schema({
-  name: { type: String, index: { unique: true }, required: true }
+  name: { type: String, index: true, required: true },
+  userId: { type: mongoose.ObjectId },
+  spec: { type: String },
+  class: { type: String }
 })
 const Character = mongoose.model('Character', characterSchema)
 
 module.exports = {
+  RefreshToken,
   Item,
   Character,
   User

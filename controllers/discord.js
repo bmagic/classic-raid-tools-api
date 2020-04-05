@@ -1,6 +1,6 @@
 const fetch = require('node-fetch')
 const FormData = require('form-data')
-const { generateJWT } = require('../lib/jwt')
+const { generateJWT, generateRefreshToken } = require('../lib/jwt')
 const { User } = require('../models')
 
 async function auth (ctx) {
@@ -55,8 +55,9 @@ async function auth (ctx) {
 
   /** Generate JWT **/
   const token = generateJWT({ id: user._id, roles: user.roles })
+  const refreshToken = await generateRefreshToken(user._id)
 
-  ctx.ok({ token: token })
+  ctx.ok({ token: token, refreshToken: refreshToken })
 }
 
 module.exports = {
