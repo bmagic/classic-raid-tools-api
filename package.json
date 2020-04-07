@@ -25,6 +25,7 @@
     "koa-logger": "^3.2.1",
     "koa-respond": "^2.1.0",
     "koa-router": "^8.0.8",
+    "koa-socket-2": "^1.2.0",
     "mongoose": "^5.9.7",
     "node-fetch": "^2.6.0"
   },

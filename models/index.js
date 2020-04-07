@@ -38,10 +38,21 @@ const raidSchema = new mongoose.Schema({
 })
 const Raid = mongoose.model('Raid', raidSchema)
 
+const registration = new mongoose.Schema({
+  date: { type: Date, required: true },
+  userId: { type: mongoose.ObjectId, index: true, required: true },
+  raidId: { type: mongoose.ObjectId, index: true, required: true },
+  characterId: { type: mongoose.ObjectId, index: true, required: true },
+  status: { type: String, required: true }
+})
+
+const Registration = mongoose.model('Registration', registration)
+
 module.exports = {
   RefreshToken,
   Item,
   Character,
   User,
-  Raid
+  Raid,
+  Registration
 }
