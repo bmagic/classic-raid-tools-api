@@ -12,7 +12,7 @@ async function auth (ctx) {
   data.append('client_secret', process.env.DISCORD_CLIENT_SECRET)
   data.append('grant_type', 'authorization_code')
   data.append('redirect_uri', process.env.DISCORD_REDIRECT_URI)
-  data.append('scope', 'email')
+  data.append('scope', 'identify  email')
   data.append('code', accessCode)
 
   const oAuthTokenResponse = await fetch('https://discordapp.com/api/oauth2/token', {
