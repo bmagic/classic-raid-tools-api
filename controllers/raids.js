@@ -52,9 +52,12 @@ async function getRegistrations (ctx) {
     for (const index in registrations) {
       const registration = registrations[index]
       const character = await Character.findOne({ _id: registration.characterId })
-      result.push({ characterId: character._id, name: character.name, spec: character.spec, class: character.class, userId: character.userId, status: registration.status })
+      if (character === null) {
+        await Registration.deleteOne({ _id: registration._id })
+      } else {
+        result.push({ characterId: character._id, name: character.name, spec: character.spec, class: character.class, userId: character.userId, status: registration.status })
+      }
     }
-    console.log(result)
     ctx.ok(result)
   } else {
     ctx.throw(400)

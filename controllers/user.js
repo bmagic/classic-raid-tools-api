@@ -42,7 +42,6 @@ async function getUsers (ctx) {
     const characters = await Character.find({ userId: user._id })
     usersResult.push({ _id: user._id, email: user.email, roles: user.roles, characters: characters })
   }
-  console.log(usersResult)
   ctx.ok(usersResult)
 }
 
