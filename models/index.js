@@ -28,7 +28,9 @@ const raidSchema = new mongoose.Schema({
   date: { type: Date, index: true, required: true },
   name: { type: String },
   instance: { type: String, required: true },
-  main: { type: Boolean, default: true }
+  logs: { type: String, default: '' },
+  gdoc: { type: String, default: '' },
+  infos: { type: String, default: '' }
 })
 const Raid = mongoose.model('Raid', raidSchema)
 

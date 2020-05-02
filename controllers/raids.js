@@ -27,11 +27,19 @@ async function createRaid (ctx) {
 async function getRaid (ctx) {
   if (ctx.params && ctx.params.id) {
     const raid = await Raid.findOne({ _id: ctx.params.id })
-
     ctx.ok(raid)
   } else {
     ctx.throw(400)
   }
+}
+
+async function updateRaid (ctx) {
+  await Raid.updateOne({ _id: ctx.params.id }, ctx.request.body)
+  ctx.app.io.to(ctx.params.id).emit('ACTION', {
+    type: 'GET_RAID',
+    id: ctx.params.id
+  })
+  ctx.noContent()
 }
 
 async function createRegistration (ctx) {
@@ -102,6 +110,7 @@ module.exports = {
   getNextRaids,
   createRaid,
   getRaid,
+  updateRaid,
   createRegistration,
   getRegistrations,
   getRegistrationLogs

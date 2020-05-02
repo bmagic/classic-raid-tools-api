@@ -17,7 +17,8 @@ if (process.env.NODE_ENV === 'development') {
 
 app.use(Cors({
   credentials: true,
-  origin: 'https://classicrt.bmagic.fr'
+  origin: 'http://localhost:8080'
+
 }))
 app.use(BodyParser({
   enableTypes: ['json'],
