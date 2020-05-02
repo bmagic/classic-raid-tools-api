@@ -2,8 +2,7 @@ const { User } = require('../models')
 const { Character } = require('../models')
 
 async function getUser (ctx) {
-  const user = await User.findOne({ _id: ctx.user.id })
-  ctx.ok(user)
+  if (ctx.user) { ctx.ok(ctx.user) } else { ctx.noContent() }
 }
 
 async function getCharacters (ctx) {
@@ -14,7 +13,7 @@ async function getCharacters (ctx) {
 async function createCharacter (ctx) {
   if (ctx.request.body && ctx.request.body.name && ctx.request.body.spec && ctx.request.body.class) {
     await new Character({ userId: ctx.user.id, name: ctx.request.body.name, spec: ctx.request.body.spec, class: ctx.request.body.class }).save()
-    ctx.ok(204)
+    ctx.noContent()
   } else {
     ctx.throw(400)
   }
@@ -25,7 +24,7 @@ async function deleteCharacter (ctx) {
     const talk = await Character.findOne({ _id: ctx.params.id })
     if (talk.userId.toString() === ctx.user.id.toString()) {
       await Character.deleteOne({ _id: ctx.params.id })
-      ctx.ok(204)
+      ctx.noContent()
     } else {
       ctx.throw(403)
     }
@@ -40,9 +39,18 @@ async function getUsers (ctx) {
   for (const userIndex in users) {
     const user = users[userIndex]
     const characters = await Character.find({ userId: user._id })
-    usersResult.push({ _id: user._id, email: user.email, roles: user.roles, characters: characters })
+    usersResult.push({ _id: user._id, email: user.email, roles: user.roles, characters: characters, username: user.username })
   }
   ctx.ok(usersResult)
+}
+async function updateUser (ctx) {
+  const user = ctx.user
+  if (ctx.request.body.email === '' || ctx.request.body.username === '') { ctx.throw(400) }
+  user.email = ctx.request.body.email
+  user.username = ctx.request.body.username
+
+  user.save()
+  ctx.noContent()
 }
 
 async function setRoles (ctx) {
@@ -50,10 +58,16 @@ async function setRoles (ctx) {
     const user = await User.findOne({ _id: ctx.request.body.id })
     user.roles = ctx.request.body.roles
     user.save()
-    ctx.ok(204)
+    ctx.noContent()
   } else {
     ctx.throw(400)
   }
+}
+async function logout (ctx) {
+  ctx.cookies.set('token', null, {
+    maxAge: 0
+  })
+  ctx.noContent()
 }
 
 module.exports = {
@@ -62,5 +76,7 @@ module.exports = {
   createCharacter,
   deleteCharacter,
   getUsers,
-  setRoles
+  setRoles,
+  updateUser,
+  logout
 }

@@ -1,6 +1,6 @@
 const fetch = require('node-fetch')
 const FormData = require('form-data')
-const { generateJWT, generateRefreshToken } = require('../lib/jwt')
+const { generateJWT } = require('../lib/jwt')
 const { User } = require('../models')
 
 async function auth (ctx) {
@@ -37,27 +37,22 @@ async function auth (ctx) {
   }
 
   const discordUserJson = await discordUserResponse.json()
-  if (discordUserJson.email === undefined || discordUserJson.id === undefined) {
-    ctx.throw(400, 'Discord return an empty user email or id')
+  if (discordUserJson.email === undefined || discordUserJson.id === undefined || discordUserJson.username === undefined) {
+    ctx.throw(400, 'Discord return an empty user email or username or id')
   }
 
   /** Insert user in DB if new **/
   let user = await User.findOne({ discordId: discordUserJson.id })
   if (user === null) {
-    user = await User.findOne({ email: discordUserJson.email })
-    if (user === null) {
-      user = await new User({ email: discordUserJson.email, discordId: discordUserJson.id }).save()
-    } else {
-      user.discordId = discordUserJson.id
-      await user.save()
-    }
+    user = await new User({ username: discordUserJson.username, email: discordUserJson.email, discordId: discordUserJson.id }).save()
   }
 
   /** Generate JWT **/
-  const token = generateJWT({ id: user._id, roles: user.roles })
-  const refreshToken = await generateRefreshToken(user._id)
-
-  ctx.ok({ token: token, refreshToken: refreshToken })
+  const token = generateJWT({ id: user._id })
+  ctx.cookies.set('token', token, {
+    maxAge: 1000 * 3600 * 24
+  })
+  ctx.noContent()
 }
 
 module.exports = {

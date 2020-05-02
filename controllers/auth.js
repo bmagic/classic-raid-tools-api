@@ -1,13 +1,29 @@
 const { validateJWT } = require('../lib/jwt')
-async function authenticate (ctx, next, role) {
-  if (ctx.headers.authorization) {
-    const token = ctx.headers.authorization.split(' ')[1]
-    try {
-      const data = validateJWT(token, '1 sec')
-      ctx.user = data
+const { User } = require('../models')
 
-      if (role && data.roles && !data.roles.includes(role)) {
-        ctx.throw(401)
+async function authenticate (ctx, next, roles) {
+  if (ctx.cookies.get('token')) {
+    const token = ctx.cookies.get('token')
+
+    try {
+      const data = validateJWT(token)
+
+      const user = await User.findOne({ _id: data.id })
+
+      if (user === null) { ctx.throw(401) }
+
+      ctx.user = user
+
+      if (roles && user.roles) {
+        let access = false
+        for (const index in user.roles) {
+          const role = user.roles[index]
+          if (roles.includes(role)) access = true
+        }
+
+        if (!access) {
+          ctx.throw(401)
+        }
       }
 
       return next()
@@ -15,7 +31,7 @@ async function authenticate (ctx, next, role) {
       ctx.throw(401, `JWT error : ${e.message}`)
     }
   }
-  ctx.throw(401)
+  return next()
 }
 
 module.exports = {

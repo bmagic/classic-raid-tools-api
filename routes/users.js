@@ -3,7 +3,7 @@ const router = new Router()
 const User = require('../controllers/user')
 const Auth = require('../controllers/auth')
 
-router.get('/', (ctx, next) => Auth.authenticate(ctx, next, 'admin'), User.getUsers)
-router.post('/roles', (ctx, next) => Auth.authenticate(ctx, next, 'admin'), User.setRoles)
+router.get('/', (ctx, next) => Auth.authenticate(ctx, next, ['admin']), User.getUsers)
+router.post('/roles', (ctx, next) => Auth.authenticate(ctx, next, ['admin']), User.setRoles)
 
 module.exports = router.routes()

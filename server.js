@@ -15,7 +15,10 @@ if (process.env.NODE_ENV === 'development') {
   app.use(Logger())
 }
 
-app.use(Cors())
+app.use(Cors({
+  credentials: true,
+  origin: 'https://classicrt.bmagic.fr'
+}))
 app.use(BodyParser({
   enableTypes: ['json'],
   jsonLimit: '5mb',
@@ -31,6 +34,5 @@ app.use(respond())
 require('./routes')(router)
 app.use(router.routes())
 app.use(router.allowedMethods())
-
 
 module.exports = app
