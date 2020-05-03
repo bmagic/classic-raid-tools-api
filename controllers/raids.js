@@ -27,6 +27,12 @@ async function createRaid (ctx) {
     ctx.throw(400)
   }
 }
+async function deleteRaid (ctx) {
+  await Raid.deleteMany({ _id: ctx.params.id })
+  await Registration.deleteMany({ raidId: ctx.params.id })
+  await RegistrationLog.deleteMany({ raidId: ctx.params.id })
+  ctx.noContent()
+}
 
 async function getRaid (ctx) {
   if (ctx.params && ctx.params.id) {
@@ -89,9 +95,7 @@ async function getRegistrations (ctx) {
     for (const index in registrations) {
       const registration = registrations[index]
       const character = await Character.findOne({ _id: registration.characterId })
-      if (character === null) {
-        await Registration.deleteOne({ _id: registration._id })
-      } else {
+      if (character !== null) {
         result.push({ characterId: character._id, name: character.name, spec: character.spec, class: character.class, userId: character.userId, status: registration.status, favorite: registration.favorite })
       }
     }
@@ -113,6 +117,7 @@ async function getRegistrationLogs (ctx) {
 module.exports = {
   getNextRaids,
   createRaid,
+  deleteRaid,
   getRaid,
   updateRaid,
   createRegistration,

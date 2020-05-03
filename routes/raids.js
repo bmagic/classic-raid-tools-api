@@ -8,7 +8,7 @@ router.get('/:id/registrations', (ctx, next) => Auth.authenticate(ctx, next, ['m
 router.get('/:id/registration-logs', (ctx, next) => Auth.authenticate(ctx, next, ['member']), Raids.getRegistrationLogs)
 router.get('/:id', (ctx, next) => Auth.authenticate(ctx, next, ['member']), Raids.getRaid)
 router.put('/:id', (ctx, next) => Auth.authenticate(ctx, next, ['member']), Raids.updateRaid)
-
+router.del('/:id', (ctx, next) => Auth.authenticate(ctx, next, ['modify_raid']), Raids.deleteRaid)
 router.post('/', (ctx, next) => Auth.authenticate(ctx, next, ['modify_raid']), Raids.createRaid)
 router.post('/registration', (ctx, next) => Auth.authenticate(ctx, next, ['member']), Raids.createRegistration)
 module.exports = router.routes()
