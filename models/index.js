@@ -3,7 +3,7 @@ const mongoose = require('mongoose')
 const userSchema = new mongoose.Schema({
   username: { type: String, index: { unique: true }, required: true },
   email: { type: String, index: { unique: true }, required: true },
-  discordId: { type: Number },
+  discordId: { type: String },
   roles: [{ type: String }]
 })
 const User = mongoose.model('User', userSchema)
