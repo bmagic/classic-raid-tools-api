@@ -33,6 +33,20 @@ async function deleteCharacter (ctx) {
   }
 }
 
+async function setMainCharacter (ctx) {
+  const characters = await Character.find({ userId: ctx.user.id })
+  for (const index in characters) {
+    const character = characters[index]
+    if (character._id.toString() === ctx.params.id) {
+      character.main = true
+    } else {
+      character.main = false
+    }
+    character.save()
+  }
+  ctx.noContent()
+}
+
 async function getUsers (ctx) {
   const users = await User.find()
   const usersResult = []
@@ -75,6 +89,7 @@ module.exports = {
   getCharacters,
   createCharacter,
   deleteCharacter,
+  setMainCharacter,
   getUsers,
   setRoles,
   updateUser,
