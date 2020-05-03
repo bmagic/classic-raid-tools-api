@@ -18,9 +18,10 @@ const Item = mongoose.model('Item', itemSchema)
 
 const characterSchema = new mongoose.Schema({
   name: { type: String, index: true, required: true },
-  userId: { type: mongoose.ObjectId },
-  spec: { type: String },
-  class: { type: String }
+  userId: { type: mongoose.ObjectId, required: true },
+  spec: { type: String, required: true },
+  class: { type: String, required: true },
+  main: { type: Boolean, default: false }
 })
 const Character = mongoose.model('Character', characterSchema)
 
@@ -28,9 +29,11 @@ const raidSchema = new mongoose.Schema({
   date: { type: Date, index: true, required: true },
   name: { type: String },
   instance: { type: String, required: true },
+  title: { type: String, default: '' },
   logs: { type: String, default: '' },
   gdoc: { type: String, default: '' },
-  infos: { type: String, default: '' }
+  infos: { type: String, default: '' },
+  main: { type: Boolean, default: false }
 })
 const Raid = mongoose.model('Raid', raidSchema)
 

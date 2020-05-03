@@ -6,11 +6,15 @@ async function getNextRaids (ctx) {
   const result = []
   for (const index in raids) {
     const raid = raids[index]
-
-    const registration = await Registration.findOne({ userId: ctx.user.id, raidId: raid._id })
     let registered = false
-    if (registration !== null) { registered = true }
-    result.push({ _id: raid._id, date: raid.date, instance: raid.instance, registered: registered })
+    const playersCount = []
+    const registrations = await Registration.find({ raidId: raid._id }).limit(999)
+    for (const index in registrations) {
+      const registration = registrations[index]
+      if (registration.userId.toString() === ctx.user.id.toString()) registered = true
+      if (!playersCount.includes(registration.userId) && registration.status === 'ok') playersCount.push(registration.userId)
+    }
+    result.push({ _id: raid._id, title: raid.title, date: raid.date, instance: raid.instance, main: raid.main, registered: registered, playersCount: playersCount.length })
   }
   ctx.ok(result)
 }

@@ -17,7 +17,7 @@ if (process.env.NODE_ENV === 'development') {
 
 app.use(Cors({
   credentials: true,
-  origin: 'http://localhost:8080'
+  origin: process.env.FRONT_URL
 
 }))
 app.use(BodyParser({
