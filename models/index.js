@@ -1,9 +1,9 @@
 const mongoose = require('mongoose')
 
 const userSchema = new mongoose.Schema({
-  username: { type: String, index: { unique: true }, required: true },
-  email: { type: String, index: { unique: true }, required: true },
-  discordId: { type: String },
+  username: { type: String },
+  email: { type: String },
+  discordId: { type: String, index: { unique: true }, required: true },
   roles: [{ type: String }]
 })
 const User = mongoose.model('User', userSchema)
@@ -15,6 +15,26 @@ const itemSchema = new mongoose.Schema({
   slot: { type: String, enum: ['head', 'neck', 'shoulder', 'chest', 'waist', 'legs', 'feet', 'wrist', 'hands', 'finger', 'trinket', 'back', 'mainHand', 'offHand', 'ranged'], required: true, index: true }
 })
 const Item = mongoose.model('Item', itemSchema)
+
+const bankItemSchema = new mongoose.Schema({
+  wid: { type: Number, index: true, required: true },
+  character: { type: String, index: true, required: true },
+  quantity: { type: Number, required: true },
+  category: { type: String },
+  subCategory: { type: String },
+  marketValue: { type: Number },
+  freeForMembers: { type: Boolean, required: true, default: false }
+})
+const BankItem = mongoose.model('BankItem', bankItemSchema)
+
+const bankItemLogSchema = new mongoose.Schema({
+  date: { type: Date, required: true },
+  wid: { type: Number, index: true, required: true },
+  character: { type: String, index: true, required: true },
+  prevQuantity: { type: Number, required: true },
+  quantity: { type: Number, required: true }
+})
+const BankItemLog = mongoose.model('BankItemLog', bankItemLogSchema)
 
 const characterSchema = new mongoose.Schema({
   name: { type: String, index: true, required: true },
@@ -63,5 +83,7 @@ module.exports = {
   User,
   Raid,
   Registration,
-  RegistrationLog
+  RegistrationLog,
+  BankItem,
+  BankItemLog
 }

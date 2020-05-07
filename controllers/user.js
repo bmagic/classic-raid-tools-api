@@ -6,8 +6,12 @@ async function getUser (ctx) {
 }
 
 async function getCharacters (ctx) {
-  const characters = await Character.find({ userId: ctx.user.id }).sort('name')
-  ctx.ok(characters)
+  if (ctx.user) {
+    const characters = await Character.find({ userId: ctx.user.id }).sort('name')
+    ctx.ok(characters)
+  } else {
+    ctx.throw(401)
+  }
 }
 
 async function createCharacter (ctx) {

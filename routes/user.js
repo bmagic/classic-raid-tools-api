@@ -5,7 +5,7 @@ const Auth = require('../controllers/auth')
 
 router.get('/', Auth.authenticate, User.getUser)
 router.get('/characters', Auth.authenticate, User.getCharacters)
-router.get('/logout', Auth.authenticate, User.logout)
+router.get('/logout', User.logout)
 router.post('/characters', Auth.authenticate, User.createCharacter)
 router.put('/characters/main/:id', Auth.authenticate, User.setMainCharacter)
 router.put('/', Auth.authenticate, User.updateUser)

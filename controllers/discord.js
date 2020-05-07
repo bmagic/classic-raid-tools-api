@@ -37,14 +37,14 @@ async function auth (ctx) {
   }
 
   const discordUserJson = await discordUserResponse.json()
-  if (discordUserJson.email === undefined || discordUserJson.id === undefined || discordUserJson.username === undefined) {
-    ctx.throw(400, 'Discord return an empty user email or username or id')
+  if (discordUserJson.id === undefined) {
+    ctx.throw(500, 'Discord return an empty id')
   }
 
   /** Insert user in DB if new **/
   let user = await User.findOne({ discordId: discordUserJson.id })
   if (user === null) {
-    user = await new User({ username: discordUserJson.username, email: discordUserJson.email, discordId: discordUserJson.id }).save()
+    user = await new User({ username: discordUserJson.username || '', email: discordUserJson.email || '', discordId: discordUserJson.id }).save()
   }
 
   /** Generate JWT **/

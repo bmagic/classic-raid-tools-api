@@ -1,5 +1,9 @@
 const { Raid, Registration, RegistrationLog, Character } = require('../models')
+const fetch = require('node-fetch')
+const moment = require('moment')
+
 async function getNextRaids (ctx) {
+  if (!ctx.user) ctx.throw(401)
   const before = new Date()
   before.setTime(before.getTime() - 12 * 60 * 60 * 1000)
   const raids = await Raid.find({ date: { $gt: before } }).sort('date')
@@ -22,7 +26,19 @@ async function getNextRaids (ctx) {
 
 async function createRaid (ctx) {
   if (ctx.request.body && ctx.request.body.date && ctx.request.body.instance) {
-    new Raid({ date: new Date(ctx.request.body.date), instance: ctx.request.body.instance }).save()
+    const raid = await new Raid({ date: new Date(ctx.request.body.date), instance: ctx.request.body.instance }).save()
+
+    const content = `<@&678625612591530003> le raid ${raid.instance} du ${moment(raid.date).format('dddd DD MMMM HH:mm')} vient d'être créé, vous pouvez vous inscrire : https://classicrt.bmagic.fr/raid/${raid._id}`
+    try {
+      await fetch(process.env.DISCORD_WEBHOOK_RAID, {
+        method: 'POST',
+        body: JSON.stringify({ content: content }),
+        headers: { 'Content-Type': 'application/json' }
+      })
+    } catch (e) {
+      console.log(e)
+    }
+
     ctx.ok(204)
   } else {
     ctx.throw(400)

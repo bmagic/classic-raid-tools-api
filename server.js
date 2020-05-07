@@ -5,15 +5,14 @@ const Cors = require('@koa/cors')
 const BodyParser = require('koa-bodyparser')
 const Helmet = require('koa-helmet')
 const respond = require('koa-respond')
-
+const fetch = require('node-fetch')
+const moment = require('moment')
 const app = new Koa()
 const router = new Router()
 
 app.use(Helmet())
 
-if (process.env.NODE_ENV === 'development') {
-  app.use(Logger())
-}
+app.use(Logger())
 
 app.use(Cors({
   credentials: true,

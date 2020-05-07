@@ -5,4 +5,5 @@ module.exports = (router) => {
   router.use('/users', require('./users'))
   router.use('/raids', require('./raids'))
   router.use('/roster', require('./roster'))
+  router.use('/bank', require('./bank'))
 }
