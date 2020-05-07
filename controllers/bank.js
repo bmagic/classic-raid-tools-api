@@ -1,5 +1,10 @@
-const { BankItem, BankItemLog } = require('../models')
+const { BankItem, BankItemLog, BankItemRequest } = require('../models')
 const { base64decode } = require('nodejs-base64')
+const Nexus = require('nexushub-client')
+const nexus = new Nexus({
+  user_key: process.env.NEXUS_KEY,
+  user_secret: process.env.NEXUS_SECRET
+})
 
 async function importData (ctx) {
   const base64 = ctx.request.body.data
@@ -78,10 +83,26 @@ async function importData (ctx) {
     await new BankItemLog({ date: currentDate, wid: importLog.wid, character: character, prevQuantity: importLog.prevQuantity, quantity: importLog.quantity }).save()
   }
 
-  await BankItem.deleteMany({ character: character })
   for (const importItem of importItems) {
-    // Fetch category from Wowhead
-    await new BankItem({ wid: importItem.wid, character: character, quantity: importItem.quantity }).save()
+    let bankItem = null
+    bankItem = await BankItem.findOne({ character: character, wid: importItem.wid })
+
+    if (bankItem === null) {
+      const item = { wid: importItem.wid, character: character, quantity: importItem.quantity }
+
+      try {
+        const res = await nexus.get(`/wow-classic/v1/items/sulfuron-horde/${importItem.wid}`)
+        if (res && res.stats && res.stats.current && res.stats.current.marketValue) {
+          item.marketValue = res.stats.current.marketValue
+        }
+      } catch (e) {
+        console.log('Cannot fetch price for item:', e.message)
+      }
+      bankItem = new BankItem(item)
+    } else {
+      bankItem.quantity = importItem.quantity
+    }
+    await bankItem.save()
   }
 
   ctx.noContent()
@@ -111,9 +132,27 @@ async function getLogs (ctx) {
   ctx.ok(result)
 }
 
+async function createItemsRequest (ctx) {
+  await new BankItemRequest({ date: new Date(), userId: ctx.user.id, items: ctx.request.body.items, message: ctx.request.body.message }).save()
+  ctx.noContent()
+}
+
+async function updateItemsRequestStatus (ctx) {
+  await BankItemRequest.updateOne({ _id: ctx.user.id }, { status: ctx.request.body.status })
+  ctx.noContent()
+}
+
+async function getItemsRequest (ctx) {
+  const result = await BankItemRequest.find().populate('userId').limit(100).sort({ _id: -1 }).exec()
+  ctx.ok(result)
+}
+
 module.exports = {
   importData,
   getLogs,
   getItems,
-  setFree
+  setFree,
+  createItemsRequest,
+  updateItemsRequestStatus,
+  getItemsRequest
 }

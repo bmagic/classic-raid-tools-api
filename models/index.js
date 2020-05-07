@@ -36,6 +36,15 @@ const bankItemLogSchema = new mongoose.Schema({
 })
 const BankItemLog = mongoose.model('BankItemLog', bankItemLogSchema)
 
+const bankItemRequestSchema = new mongoose.Schema({
+  date: { type: Date, required: true },
+  items: { type: Object, required: true },
+  userId: { type: mongoose.ObjectId, required: true, ref: 'User' },
+  status: { type: String, default: 'asked' },
+  message: { type: String, required: true }
+})
+const BankItemRequest = mongoose.model('BankItemRequest', bankItemRequestSchema)
+
 const characterSchema = new mongoose.Schema({
   name: { type: String, index: true, required: true },
   userId: { type: mongoose.ObjectId, required: true },
@@ -85,5 +94,6 @@ module.exports = {
   Registration,
   RegistrationLog,
   BankItem,
-  BankItemLog
+  BankItemLog,
+  BankItemRequest
 }
