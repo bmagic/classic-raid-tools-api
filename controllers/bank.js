@@ -1,5 +1,6 @@
 const { BankItem, BankItemLog, BankItemRequest } = require('../models')
 const { base64decode } = require('nodejs-base64')
+const { sendMessage } = require('../lib/discordWebhook')
 const Nexus = require('nexushub-client')
 const nexus = new Nexus({
   user_key: process.env.NEXUS_KEY,
@@ -134,11 +135,21 @@ async function getLogs (ctx) {
 
 async function createItemsRequest (ctx) {
   await new BankItemRequest({ date: new Date(), userId: ctx.user.id, items: ctx.request.body.items, message: ctx.request.body.message }).save()
+
+  const content = `Une nouvelle demande d'objets de la BDG a été faite par <@${ctx.user.discordId}>`
+  await sendMessage('bank', content)
+
   ctx.noContent()
 }
 
 async function updateItemsRequestStatus (ctx) {
-  await BankItemRequest.updateOne({ _id: ctx.user.id }, { status: ctx.request.body.status })
+  await BankItemRequest.updateOne({ _id: ctx.params.id }, { status: ctx.request.body.status })
+  const result = await BankItemRequest.findOne({ _id: ctx.params.id }).populate('userId')
+
+  const content = `<@${result.userId.discordId}> ta demande d'objet a été mise à jour.`
+
+  await sendMessage('bank', content)
+
   ctx.noContent()
 }
 

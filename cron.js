@@ -1,6 +1,6 @@
 const CronJob = require('cron').CronJob
 const { Raid, User, Registration, BankItem } = require('./models/index')
-const fetch = require('node-fetch')
+const { sendMessage } = require('./lib/discordWebhook')
 const moment = require('moment')
 const Nexus = require('nexushub-client')
 const nexus = new Nexus({
@@ -47,15 +47,7 @@ const checkRaids = async () => {
           content += `tu n'as pas renseigné tes dispos pour le raid ${raid.instance} du ${moment(raid.date).format('dddd DD MMMM HH:mm')} https://classicrt.bmagic.fr/raid/${raid._id}`
         }
         console.log(`Send discord hook for raid ${raid._id}`)
-        try {
-          await fetch(process.env.DISCORD_WEBHOOK_RAID, {
-            method: 'POST',
-            body: JSON.stringify({ content: content }),
-            headers: { 'Content-Type': 'application/json' }
-          })
-        } catch (e) {
-          console.log(e)
-        }
+        await sendMessage('raid', content)
       }
     }
   } catch (e) {

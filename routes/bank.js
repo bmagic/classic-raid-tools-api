@@ -10,6 +10,6 @@ router.get('/', (ctx, next) => Auth.authenticate(ctx, next, ['member']), Bank.ge
 router.get('/requests', (ctx, next) => Auth.authenticate(ctx, next, ['member']), Bank.getItemsRequest)
 
 router.post('/request', (ctx, next) => Auth.authenticate(ctx, next, ['member']), Bank.createItemsRequest)
-router.put('/request', (ctx, next) => Auth.authenticate(ctx, next, ['banker']), Bank.updateItemsRequestStatus)
+router.put('/request/status/:id', (ctx, next) => Auth.authenticate(ctx, next, ['banker']), Bank.updateItemsRequestStatus)
 
 module.exports = router.routes()
