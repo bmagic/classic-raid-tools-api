@@ -9,7 +9,7 @@
   "author": "Bmagic <baptiste@bmagic.fr>",
   "license": "GPL-3.0",
   "devDependencies": {
-    "eslint": "^6.8.0",
+    "eslint": "^7.0.0",
     "eslint-config-standard": "^14.1.1",
     "eslint-plugin-import": "^2.20.2",
     "eslint-plugin-node": "^11.1.0",
@@ -20,7 +20,7 @@
     "@koa/cors": "^3.0.0",
     "cron": "^1.8.2",
     "form-data": "^3.0.0",
-    "jose": "^1.25.0",
+    "jose": "^1.27.0",
     "koa": "^2.11.0",
     "koa-bodyparser": "^4.3.0",
     "koa-helmet": "^5.2.0",
@@ -29,7 +29,7 @@
     "koa-router": "^8.0.8",
     "koa-socket-2": "^1.2.0",
     "moment": "^2.25.3",
-    "mongoose": "^5.9.7",
+    "mongoose": "^5.9.13",
     "nexushub-client": "^1.2.0",
     "node-fetch": "^2.6.0",
     "nodejs-base64": "^1.0.3"

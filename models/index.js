@@ -71,6 +71,7 @@ const registration = new mongoose.Schema({
   userId: { type: mongoose.ObjectId, index: true, required: true },
   raidId: { type: mongoose.ObjectId, index: true, required: true },
   characterId: { type: mongoose.ObjectId, index: true, required: true, ref: 'Character' },
+  validated: { type: Boolean, default: false },
   favorite: { type: Boolean },
   status: { type: String }
 })
@@ -82,7 +83,8 @@ const registrationLog = new mongoose.Schema({
   raidId: { type: mongoose.ObjectId, index: true, required: true },
   characterName: { type: String, required: true },
   status: { type: String },
-  favorite: { type: Boolean }
+  favorite: { type: Boolean },
+  validated: { type: Boolean, required: true }
 })
 const RegistrationLog = mongoose.model('RegistrationLog', registrationLog)
 

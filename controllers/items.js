@@ -22,7 +22,7 @@ async function addItem (ctx) {
       }
     }
   }
-  ctx.ok(204)
+  ctx.noContent()
 }
 
 module.exports = {

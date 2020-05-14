@@ -31,10 +31,14 @@ async function authenticate (ctx, next, roles) {
       ctx.throw(401, `JWT error : ${e.message}`)
     }
   }
-  return next()
+
+  if (roles === undefined) {
+    return next()
+  } else {
+    ctx.throw(401)
+  }
 }
 
 module.exports = {
   authenticate
 }
-

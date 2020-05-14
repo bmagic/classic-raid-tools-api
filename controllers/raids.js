@@ -31,7 +31,7 @@ async function createRaid (ctx) {
     const content = `<@&678625612591530003> le raid ${raid.instance} du ${moment(raid.date).format('dddd DD MMMM HH:mm')} vient d'être créé, vous pouvez vous inscrire : https://classicrt.bmagic.fr/raid/${raid._id}`
     await sendMessage('raid', content)
 
-    ctx.ok(204)
+    ctx.noContent()
   } else {
     ctx.throw(400)
   }
@@ -66,6 +66,7 @@ async function createRegistration (ctx) {
     const status = ctx.request.body.status || undefined
     const favorite = ctx.request.body.favorite || false
     const character = await Character.findOne({ _id: ctx.request.body.characterId })
+    const validated = ctx.request.body.validated || false
 
     if (character === null) ctx.throw(400)
 
@@ -79,7 +80,7 @@ async function createRegistration (ctx) {
       await new Registration({ date: new Date(), userId: ctx.user.id, raidId: ctx.request.body.raidId, characterId: ctx.request.body.characterId, status: status, favorite: favorite }).save()
     }
 
-    await new RegistrationLog({ date: new Date(), raidId: ctx.request.body.raidId, characterName: character.name, status: status, favorite: favorite }).save()
+    await new RegistrationLog({ date: new Date(), raidId: ctx.request.body.raidId, characterName: character.name, status: status, favorite: favorite, validated: validated }).save()
 
     ctx.app.io.to(ctx.request.body.raidId).emit('ACTION', {
       type: 'GET_REGISTRATIONS',
@@ -91,21 +92,45 @@ async function createRegistration (ctx) {
       raidId: ctx.request.body.raidId
     })
 
-    ctx.ok(204)
+    ctx.noContent()
   } else {
     ctx.throw(400)
   }
 }
 
+async function updateRegistration (ctx) {
+  const registration = await Registration.findOne({ _id: ctx.params.id }).populate('characterId')
+  if (registration === null) {
+    ctx.throw(400)
+  }
+
+  registration.validated = ctx.request.body.validated
+  await registration.save()
+
+  await new RegistrationLog({ date: new Date(), raidId: registration.raidId, characterName: registration.characterId.name, status: registration.status, favorite: registration.favorite, validated: registration.validated }).save()
+
+  ctx.app.io.to(registration.raidId).emit('ACTION', {
+    type: 'GET_REGISTRATIONS',
+    raidId: registration.raidId
+  })
+
+  ctx.app.io.to(registration.raidId).emit('ACTION', {
+    type: 'GET_REGISTRATION_LOGS',
+    raidId: registration.raidId
+  })
+
+  ctx.noContent()
+}
+
 async function getRegistrations (ctx) {
   if (ctx.params && ctx.params.id) {
     const result = []
-    const registrations = await Registration.find({ raidId: ctx.params.id })
+    const registrations = await Registration.find({ raidId: ctx.params.id }).sort('date')
     for (const index in registrations) {
       const registration = registrations[index]
       const character = await Character.findOne({ _id: registration.characterId })
       if (character !== null) {
-        result.push({ characterId: character._id, name: character.name, spec: character.spec, class: character.class, userId: character.userId, status: registration.status, favorite: registration.favorite })
+        result.push({ _id: registration._id, characterId: character._id, name: character.name, spec: character.spec, class: character.class, userId: character.userId, status: registration.status, favorite: registration.favorite || false, validated: registration.validated || false })
       }
     }
     ctx.ok(result)
@@ -130,6 +155,7 @@ module.exports = {
   getRaid,
   updateRaid,
   createRegistration,
+  updateRegistration,
   getRegistrations,
   getRegistrationLogs
 }
