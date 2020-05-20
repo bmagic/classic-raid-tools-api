@@ -80,7 +80,7 @@ async function createRegistration (ctx) {
       await new Registration({ date: new Date(), userId: ctx.user.id, raidId: ctx.request.body.raidId, characterId: ctx.request.body.characterId, status: status, favorite: favorite }).save()
     }
 
-    await new RegistrationLog({ date: new Date(), raidId: ctx.request.body.raidId, characterName: character.name, status: status, favorite: favorite, validated: validated }).save()
+    await new RegistrationLog({ date: new Date(), raidId: ctx.request.body.raidId, characterName: character.name, status: status, favorite: favorite, validated: validated, userId: ctx.user.id }).save()
 
     ctx.app.io.to(ctx.request.body.raidId).emit('ACTION', {
       type: 'GET_REGISTRATIONS',
@@ -107,7 +107,7 @@ async function updateRegistration (ctx) {
   registration.validated = ctx.request.body.validated
   await registration.save()
 
-  await new RegistrationLog({ date: new Date(), raidId: registration.raidId, characterName: registration.characterId.name, status: registration.status, favorite: registration.favorite, validated: registration.validated }).save()
+  await new RegistrationLog({ date: new Date(), raidId: registration.raidId, characterName: registration.characterId.name, status: registration.status, favorite: registration.favorite, validated: registration.validated, userId: ctx.user.id }).save()
 
   ctx.app.io.to(registration.raidId).emit('ACTION', {
     type: 'GET_REGISTRATIONS',
@@ -141,7 +141,7 @@ async function getRegistrations (ctx) {
 
 async function getRegistrationLogs (ctx) {
   if (ctx.params && ctx.params.id) {
-    const registrationLogs = await RegistrationLog.find({ raidId: ctx.params.id }).sort({ date: -1 }).limit(100)
+    const registrationLogs = await RegistrationLog.find({ raidId: ctx.params.id }).populate('userId').sort({ date: -1 }).limit(100)
     ctx.ok(registrationLogs)
   } else {
     ctx.throw(400)

@@ -1,6 +1,7 @@
 const CronJob = require('cron').CronJob
-const { Raid, User, Registration, BankItem } = require('./models/index')
+const { Raid, User, Registration, BankItem, Presence, Character } = require('./models/index')
 const { sendMessage } = require('./lib/discordWebhook')
+const axios = require('axios')
 const moment = require('moment')
 const Nexus = require('nexushub-client')
 const nexus = new Nexus({
@@ -15,6 +16,10 @@ module.exports = {
     }, null, true, 'Europe/Paris')
     new CronJob('0 0 5 * * *', async () => {
       await getBankItemsPrices()
+    }, null, true, 'Europe/Paris')
+    getPresences()
+    new CronJob('0 0 6 * * *', async () => {
+      await getPresences()
     }, null, true, 'Europe/Paris')
   }
 }
@@ -72,4 +77,50 @@ const getBankItemsPrices = async () => {
   } catch (e) {
     console.log(e)
   }
+}
+
+const getPresences = async () => {
+  console.log('Starting Update Presences')
+  try {
+    const result = await axios.get(encodeURI(`https://classic.warcraftlogs.com:443/v1/reports/guild/Bloodthirst/Sulfuron/EU?api_key=${process.env.WARCRAFTLOGS_API_KEY}`))
+    for (const reportSummary of result.data) {
+      const result = await axios.get(encodeURI(`https://classic.warcraftlogs.com:443/v1/report/fights/${reportSummary.id}?api_key=${process.env.WARCRAFTLOGS_API_KEY}`))
+
+      for (const characterWCL of result.data.exportedCharacters) {
+        const character = await Character.findOne({ name: characterWCL.name }).populate('userId')
+        if (character !== null && character.userId !== null) {
+          let instance = null
+          switch (reportSummary.zone) {
+            case 1000 :
+              instance = 'mc'
+              break
+            case 1001 :
+              instance = 'onyxia'
+              break
+            case 1002 :
+              instance = 'bwl'
+              break
+            case 1003:
+              instance = 'zg'
+              break
+          }
+          if (instance) {
+            await Presence.findOneAndUpdate({ userId: character.userId._id, characterId: character._id, reportId: reportSummary.id, instance: instance }, { date: moment(reportSummary.start).toISOString(), userId: character.userId._id, characterId: character._id, report: reportSummary.id, instance: instance, status: 'ok' }, { new: true, upsert: true })
+          } else {
+            console.error(`Cannot found instance zone ${reportSummary.zone}`)
+          }
+        }
+      }
+      await sleep(1000)
+    }
+    console.log('End Update Presences')
+  } catch (e) {
+    console.log(e)
+  }
+}
+
+const sleep = (ms) => {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms)
+  })
 }

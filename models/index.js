@@ -8,9 +8,19 @@ const userSchema = new mongoose.Schema({
 })
 const User = mongoose.model('User', userSchema)
 
+const presenceSchema = new mongoose.Schema({
+  userId: { type: mongoose.ObjectId, index: true, required: true, ref: 'User' },
+  characterId: { type: mongoose.ObjectId, index: true, required: true, ref: 'Character' },
+  instance: { type: String, index: true, required: true },
+  status: { type: String, required: true },
+  reportId: { type: String, required: true },
+  date: { type: Date, required: true }
+})
+const Presence = mongoose.model('Presence', presenceSchema)
+
 const itemSchema = new mongoose.Schema({
   wid: { type: Number, index: true, required: true },
-  character: { type: String, index: true, required: true },
+  characterId: { type: mongoose.ObjectId, index: true, required: true, ref: 'Character' },
   date: { type: Date, required: true },
   slot: { type: String, enum: ['head', 'neck', 'shoulder', 'chest', 'waist', 'legs', 'feet', 'wrist', 'hands', 'finger', 'trinket', 'back', 'mainHand', 'offHand', 'ranged'], required: true, index: true }
 })
@@ -46,8 +56,8 @@ const bankItemRequestSchema = new mongoose.Schema({
 const BankItemRequest = mongoose.model('BankItemRequest', bankItemRequestSchema)
 
 const characterSchema = new mongoose.Schema({
-  name: { type: String, index: true, required: true },
-  userId: { type: mongoose.ObjectId, required: true },
+  name: { type: String, index: { unique: true }, required: true },
+  userId: { type: mongoose.ObjectId, required: true, ref: 'User' },
   spec: { type: String, required: true },
   class: { type: String, required: true },
   main: { type: Boolean, default: false }
@@ -84,7 +94,8 @@ const registrationLog = new mongoose.Schema({
   characterName: { type: String, required: true },
   status: { type: String },
   favorite: { type: Boolean },
-  validated: { type: Boolean, required: true }
+  validated: { type: Boolean, required: true },
+  userId: { type: mongoose.ObjectId, index: true, required: true, ref: 'User' }
 })
 const RegistrationLog = mongoose.model('RegistrationLog', registrationLog)
 
@@ -96,6 +107,7 @@ module.exports = {
   Registration,
   RegistrationLog,
   BankItem,
+  BankItemRequest,
   BankItemLog,
-  BankItemRequest
+  Presence
 }
