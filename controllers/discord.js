@@ -50,7 +50,7 @@ async function auth (ctx) {
   /** Generate JWT **/
   const token = generateJWT({ id: user._id })
   ctx.cookies.set('token', token, {
-    maxAge: 1000 * 3600 * 24
+    maxAge: 1000 * 3600 * 24 * 30
   })
   ctx.noContent()
 }
