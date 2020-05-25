@@ -9,7 +9,6 @@ const nexus = new Nexus({
 
 async function importData (ctx) {
   const base64 = ctx.request.body.data
-  // base64 = 'W1Ryb2xsaW5lLDgwNzAsZW5VU107Wy0xLCwwLEJhY2twYWNrLDEsU21hbGwgQmx1ZSBQb3VjaCwyLFNtYWxsIEdyZWVuIFBvdWNoLDMsTGluZW4gQmFnLDQsTGluZW4gQmFnLDUsLDYsLDcsLDgsLDksLDEwLCwxMSwsMTIsXTtbLTEsMSwyNDU2LDNdO1stMSwyLDE3MDU2LDJdO1swLDEsNjk0OCwxXTtbMCwyLDQ4OTMsNV07WzAsMywxNDU0NCwxXTtbMCw0LDQ4OTQsNV07WzAsNSw1MDY4LDFdO1swLDYsNTA2MiwxMl07WzAsNyw1MDg4LDFdO1swLDgsNTA3NywxXTtbMCw5LDg1OCwxXTtbMCwxMCw1MDMwLDEyXTtbMCwxMSw1MDc2LDFdO1swLDEyLDQ4OTUsMV07WzAsMTQsNTQ2OSwxXTs='
   const data = base64decode(base64)
 
   if (data.indexOf('[') !== 0) {
@@ -76,6 +75,8 @@ async function importData (ctx) {
     }
     if (!found) {
       importLogs.push({ wid: bankItem.wid, prevQuantity: bankItem.quantity, quantity: 0 })
+      bankItem.quantity = 0
+      await bankItem.save()
     }
   }
 
@@ -85,20 +86,12 @@ async function importData (ctx) {
   }
 
   for (const importItem of importItems) {
-    let bankItem = null
-    bankItem = await BankItem.findOne({ character: character, wid: importItem.wid })
+    await new BankItem({ wid: importItem.wid, character: character, quantity: importItem.quantity }).save()
+
+    let bankItem = await BankItem.findOne({ character: character, wid: importItem.wid })
 
     if (bankItem === null) {
       const item = { wid: importItem.wid, character: character, quantity: importItem.quantity }
-
-      try {
-        const res = await nexus.get(`/wow-classic/v1/items/sulfuron-horde/${importItem.wid}`)
-        if (res && res.stats && res.stats.current && res.stats.current.marketValue) {
-          item.marketValue = res.stats.current.marketValue
-        }
-      } catch (e) {
-        console.log('Cannot fetch price for item:', e.message)
-      }
       bankItem = new BankItem(item)
     } else {
       bankItem.quantity = importItem.quantity
@@ -107,10 +100,30 @@ async function importData (ctx) {
   }
 
   ctx.noContent()
+
+  for (const importItem of importItems) {
+    const bankItem = await BankItem.findOne({ character: character, wid: importItem.wid })
+
+    if (bankItem !== null && bankItem.wid !== 0) {
+      try {
+        const res = await nexus.get(`/wow-classic/v1/items/sulfuron-horde/${importItem.wid}`)
+        if (res && res.stats && res.stats.current && res.stats.current.marketValue) {
+          bankItem.marketValue = res.stats.current.marketValue
+          bankItem.save()
+          console.log(`Update Market price for item ${importItem.wid}`)
+        }
+      } catch (e) {
+        console.log('Cannot fetch price for item:', e.message)
+      }
+    } else {
+      console.error('ERROR FIX THIS on Market Update import')
+    }
+  }
 }
 
 async function getItems (ctx) {
   const result = await BankItem.aggregate([
+    { $match: { quantity: { $gt: 0 } } },
     {
       $group: { _id: '$wid', quantity: { $sum: '$quantity' }, characters: { $push: '$character' }, marketValue: { $first: '$marketValue' }, freeForMembers: { $first: '$freeForMembers' } }
     },
@@ -134,9 +147,9 @@ async function getLogs (ctx) {
 }
 
 async function createItemsRequest (ctx) {
-  await new BankItemRequest({ date: new Date(), userId: ctx.user.id, items: ctx.request.body.items, message: ctx.request.body.message }).save()
+  await new BankItemRequest({ date: new Date(), userId: ctx.user.id, items: ctx.request.body.items, message: ctx.request.body.message, reroll: ctx.request.body.reroll }).save()
 
-  const content = `Une nouvelle demande d'objets de la BDG a été faite par <@${ctx.user.discordId}>`
+  const content = `<@&712753740708577350>, une nouvelle demande d'objets de la BDG a été faite par <@${ctx.user.discordId}>`
   await sendMessage('bank', content)
 
   ctx.noContent()

@@ -10,14 +10,15 @@ const nexus = new Nexus({
 })
 module.exports = {
 
-  runCron: () => {
+  runCron: async () => {
     new CronJob('0 0 20 * * *', async () => {
       await checkRaids()
     }, null, true, 'Europe/Paris')
+    await getBankItemsPrices()
     new CronJob('0 0 5 * * *', async () => {
       await getBankItemsPrices()
     }, null, true, 'Europe/Paris')
-    getPresences()
+    await getPresences()
     new CronJob('0 0 6 * * *', async () => {
       await getPresences()
     }, null, true, 'Europe/Paris')
@@ -67,6 +68,7 @@ const getBankItemsPrices = async () => {
     const bankItems = await BankItem.find()
     for (const bankItem of bankItems) {
       if (bankItem.wid === 0) continue
+      console.log(`Updating price for wid ${bankItem.wid} `)
       const res = await nexus.get(`/wow-classic/v1/items/sulfuron-horde/${bankItem.wid}`)
       if (res && res.stats && res.stats.current && res.stats.current.marketValue) {
         bankItem.marketValue = res.stats.current.marketValue

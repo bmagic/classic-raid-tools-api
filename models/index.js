@@ -50,6 +50,7 @@ const bankItemRequestSchema = new mongoose.Schema({
   date: { type: Date, required: true },
   items: { type: Object, required: true },
   userId: { type: mongoose.ObjectId, required: true, ref: 'User' },
+  reroll: { type: Boolean, default: false },
   status: { type: String, default: 'asked' },
   message: { type: String, required: true }
 })
@@ -99,6 +100,16 @@ const registrationLog = new mongoose.Schema({
 })
 const RegistrationLog = mongoose.model('RegistrationLog', registrationLog)
 
+const loot = new mongoose.Schema({
+  wid: { type: Number, required: true },
+  instance: { type: String, required: true },
+  boss: { type: Number, required: true },
+  classes: { type: Array, default: [] },
+  comment: { type: String }
+})
+
+const Loot = mongoose.model('Loot', loot)
+
 module.exports = {
   Item,
   Character,
@@ -109,5 +120,6 @@ module.exports = {
   BankItem,
   BankItemRequest,
   BankItemLog,
-  Presence
+  Presence,
+  Loot
 }

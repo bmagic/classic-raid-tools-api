@@ -11,6 +11,6 @@ mongoose.connect(process.env.MONGO_URL || 'mongodb://root:root@localhost/classic
 })
 
 require('./socket')
-require('./cron').runCron()
+require('./cron').runCron().catch((e) => console.log(e))
 const port = process.env.PORT || 3000
 server.listen(port, () => console.log(`API server started on ${port}`))

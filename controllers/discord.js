@@ -2,6 +2,7 @@ const fetch = require('node-fetch')
 const FormData = require('form-data')
 const { generateJWT } = require('../lib/jwt')
 const { User } = require('../models')
+const { sendMessage } = require('../lib/discordWebhook')
 
 async function auth (ctx) {
   const accessCode = ctx.request.query.code
@@ -45,6 +46,8 @@ async function auth (ctx) {
   let user = await User.findOne({ discordId: discordUserJson.id })
   if (user === null) {
     user = await new User({ username: discordUserJson.username || '', email: discordUserJson.email || '', discordId: discordUserJson.id }).save()
+    const content = `<@&678898787909107722>, l'utilisateur <@${discordUserJson.id}> vient de s'inscrire sur le site.`
+    await sendMessage('admin', content)
   }
 
   /** Generate JWT **/
