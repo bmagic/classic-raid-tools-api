@@ -73,7 +73,7 @@ async function importData (ctx) {
         found = true
       }
     }
-    if (!found) {
+    if (!found && bankItem.quantity !== 0) {
       importLogs.push({ wid: bankItem.wid, prevQuantity: bankItem.quantity, quantity: 0 })
       bankItem.quantity = 0
       await bankItem.save()

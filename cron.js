@@ -84,7 +84,7 @@ const getBankItemsPrices = async () => {
 const getPresences = async () => {
   console.log('Starting Update Presences')
   try {
-    const result = await axios.get(encodeURI(`https://classic.warcraftlogs.com:443/v1/reports/guild/Bloodthirst/Sulfuron/EU?api_key=${process.env.WARCRAFTLOGS_API_KEY}`))
+    const result = await axios.get(encodeURI(`https://classic.warcraftlogs.com:443/v1/reports/guild/OWLS/Sulfuron/EU?api_key=${process.env.WARCRAFTLOGS_API_KEY}`))
     for (const reportSummary of result.data) {
       const result = await axios.get(encodeURI(`https://classic.warcraftlogs.com:443/v1/report/fights/${reportSummary.id}?api_key=${process.env.WARCRAFTLOGS_API_KEY}`))
 

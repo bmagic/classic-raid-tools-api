@@ -1,5 +1,6 @@
 const { Raid, Registration, RegistrationLog, Character } = require('../models')
 const moment = require('moment')
+const mongoose = require('mongoose')
 const { sendMessage } = require('../lib/discordWebhook')
 
 async function getNextRaids (ctx) {
@@ -45,7 +46,9 @@ async function deleteRaid (ctx) {
 
 async function getRaid (ctx) {
   if (ctx.params && ctx.params.id) {
+    if (!mongoose.Types.ObjectId.isValid(ctx.params.id)) ctx.throw(404)
     const raid = await Raid.findOne({ _id: ctx.params.id })
+    if (raid === null) ctx.throw(404)
     ctx.ok(raid)
   } else {
     ctx.throw(400)
@@ -124,6 +127,8 @@ async function updateRegistration (ctx) {
 
 async function getRegistrations (ctx) {
   if (ctx.params && ctx.params.id) {
+    if (!mongoose.Types.ObjectId.isValid(ctx.params.id)) ctx.throw(404)
+
     const result = []
     const registrations = await Registration.find({ raidId: ctx.params.id }).sort('date')
     for (const index in registrations) {
