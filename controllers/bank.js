@@ -104,8 +104,9 @@ async function importData (ctx) {
   for (const importItem of importItems) {
     const bankItem = await BankItem.findOne({ character: character, wid: importItem.wid })
 
-    if (bankItem !== null && bankItem.wid !== 0) {
+    if (bankItem !== null) {
       try {
+        if (bankItem.wid === 0) continue
         const res = await nexus.get(`/wow-classic/v1/items/sulfuron-horde/${importItem.wid}`)
         if (res && res.stats && res.stats.current && res.stats.current.marketValue) {
           bankItem.marketValue = res.stats.current.marketValue
