@@ -37,7 +37,7 @@ const checkRaids = async () => {
       for (const user of users) {
         let isRegistered = false
         for (const registration of registrations) {
-          if (registration.userId.toString() === user._id.toString()) { isRegistered = true }
+          if (registration.userId.toString() === user._id.toString() && registration.status) { isRegistered = true }
         }
         if (!isRegistered) missingUsers.push(user.discordId)
       }
