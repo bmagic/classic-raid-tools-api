@@ -42,8 +42,8 @@ async function importData (ctx) {
   }
 
   const bankItems = await BankItem.find({ character: character })
+  const currentDate = new Date()
 
-  const importLogs = []
   // Check diff with bank
   for (const importItem of importItems) {
     let inBank = false
@@ -52,51 +52,17 @@ async function importData (ctx) {
         inBank = true
 
         if (importItem.quantity !== bankItem.quantity) {
-          importLogs.push({ wid: importItem.wid, prevQuantity: bankItem.quantity, quantity: importItem.quantity })
+          await new BankItemLog({ date: currentDate, wid: importItem.wid, character: character, prevQuantity: bankItem.quantity, quantity: importItem.quantity }).save()
+          bankItem.quantity = importItem.quantity
+          await bankItem.save()
         }
+        break
       }
     }
     if (!inBank) {
-      importLogs.push({ wid: importItem.wid, prevQuantity: 0, quantity: importItem.quantity })
+      await new BankItem({ wid: importItem.wid, character: character, quantity: importItem.quantity }).save()
+      await new BankItemLog({ date: currentDate, wid: importItem.wid, character: character, prevQuantity: 0, quantity: importItem.quantity }).save()
     }
-  }
-
-  for (const bankItem of bankItems) {
-    let found = false
-    for (const importLog of importLogs) {
-      if (bankItem.wid === importLog.wid) {
-        found = true
-      }
-    }
-    for (const importItem of importItems) {
-      if (bankItem.wid === importItem.wid) {
-        found = true
-      }
-    }
-    if (!found && bankItem.quantity !== 0) {
-      importLogs.push({ wid: bankItem.wid, prevQuantity: bankItem.quantity, quantity: 0 })
-      bankItem.quantity = 0
-      await bankItem.save()
-    }
-  }
-
-  const currentDate = new Date()
-  for (const importLog of importLogs) {
-    await new BankItemLog({ date: currentDate, wid: importLog.wid, character: character, prevQuantity: importLog.prevQuantity, quantity: importLog.quantity }).save()
-  }
-
-  for (const importItem of importItems) {
-    await new BankItem({ wid: importItem.wid, character: character, quantity: importItem.quantity }).save()
-
-    let bankItem = await BankItem.findOne({ character: character, wid: importItem.wid })
-
-    if (bankItem === null) {
-      const item = { wid: importItem.wid, character: character, quantity: importItem.quantity }
-      bankItem = new BankItem(item)
-    } else {
-      bankItem.quantity = importItem.quantity
-    }
-    await bankItem.save()
   }
 
   ctx.noContent()
