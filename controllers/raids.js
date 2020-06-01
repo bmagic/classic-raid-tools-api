@@ -133,9 +133,9 @@ async function getRegistrations (ctx) {
     const registrations = await Registration.find({ raidId: ctx.params.id }).sort('date')
     for (const index in registrations) {
       const registration = registrations[index]
-      const character = await Character.findOne({ _id: registration.characterId })
-      if (character !== null) {
-        result.push({ _id: registration._id, characterId: character._id, name: character.name, spec: character.spec, class: character.class, userId: character.userId, status: registration.status, favorite: registration.favorite || false, validated: registration.validated || false })
+      const character = await Character.findOne({ _id: registration.characterId }).populate('userId')
+      if (character !== null && character.userId !== null) {
+        result.push({ _id: registration._id, characterId: character._id, name: character.name, spec: character.spec, class: character.class, main: character.main || false, userId: character.userId._id, username: character.userId.username, status: registration.status, favorite: registration.favorite || false, validated: registration.validated || false })
       }
     }
     ctx.ok(result)
