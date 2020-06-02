@@ -10,7 +10,7 @@ const User = mongoose.model('User', userSchema)
 
 const presenceSchema = new mongoose.Schema({
   userId: { type: mongoose.ObjectId, index: true, required: true, ref: 'User' },
-  characterId: { type: mongoose.ObjectId, index: true, required: true, ref: 'Character' },
+  characterId: { type: mongoose.ObjectId, ref: 'Character' },
   instance: { type: String, index: true, required: true },
   status: { type: String, required: true },
   reportId: { type: String, required: true },

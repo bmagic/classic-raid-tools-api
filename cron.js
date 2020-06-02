@@ -14,11 +14,11 @@ module.exports = {
     new CronJob('0 0 20 * * *', async () => {
       await checkRaids()
     }, null, true, 'Europe/Paris')
-    await getBankItemsPrices()
+    // await getBankItemsPrices()
     new CronJob('0 0 5 * * *', async () => {
       await getBankItemsPrices()
     }, null, true, 'Europe/Paris')
-    await getPresences()
+    // await getPresences()
     new CronJob('0 0 6 * * *', async () => {
       await getPresences()
     }, null, true, 'Europe/Paris')
