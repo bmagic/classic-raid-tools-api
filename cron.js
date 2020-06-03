@@ -22,7 +22,7 @@ module.exports = {
     new CronJob('0 0 6 * * *', async () => {
       await getPresences()
     }, null, true, 'Europe/Paris')
-    await getItems()
+    //await getItems()
     new CronJob('0 0 7 * * *', async () => {
       await getItems()
     }, null, true, 'Europe/Paris')
