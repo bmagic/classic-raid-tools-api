@@ -7,4 +7,7 @@ module.exports = (router) => {
   router.use('/roster', require('./roster'))
   router.use('/bank', require('./bank'))
   router.use('/presences', require('./presences'))
+  router.use('/items', require('./items'))
+  router.use('/characters', require('./characters'))
+
 }

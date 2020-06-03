@@ -1,31 +1,18 @@
 const { Item } = require('../models')
+const mongoose = require('mongoose')
 
-async function getItems (ctx) {
-  const filter = {}
-  if (ctx.request.query.character) {
-    filter.character = ctx.request.query.character
-  }
-  const items = await Item.find(filter).sort({ date: -1 })
-  ctx.ok(items)
-}
-
-async function addItem (ctx) {
-  const { wid, character, date, slot } = ctx.request.body
-  if (wid !== 0) {
-    const item = await Item.findOne({ wid: wid, character: character, slot: slot })
-    if (item === null) {
-      await new Item({ wid: wid, character: character, slot: slot, date: date }).save()
-    } else {
-      if (item.date.getTime() < date) {
-        item.date = date
-        item.save()
-      }
-    }
-  }
-  ctx.noContent()
+async function getCharacterItems (ctx) {
+  const result = await Item.aggregate([
+    { $match: { characterId: mongoose.Types.ObjectId(ctx.params.id) } },
+    { $sort: { date: -1 } },
+    {
+      $group: { _id: '$wid', slot: { $first: '$slot' }, date: { $first: '$date' }, encounters: { $push: { boss: '$boss', zone: '$zone', date: '$date' } } }
+    },
+    { $sort: { date: -1 } }
+  ])
+  ctx.ok(result)
 }
 
 module.exports = {
-  getItems,
-  addItem
+  getCharacterItems
 }
