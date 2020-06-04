@@ -14,15 +14,15 @@ module.exports = {
     new CronJob('0 0 20 * * *', async () => {
       await checkRaids()
     }, null, true, 'Europe/Paris')
-    //await getBankItemsPrices()
+    // await getBankItemsPrices()
     new CronJob('0 0 5 * * *', async () => {
       await getBankItemsPrices()
     }, null, true, 'Europe/Paris')
-    //await getPresences()
+    // await getPresences()
     new CronJob('0 0 6 * * *', async () => {
       await getPresences()
     }, null, true, 'Europe/Paris')
-    //await getItems()
+    // await getItems()
     new CronJob('0 0 7 * * *', async () => {
       await getItems()
     }, null, true, 'Europe/Paris')
@@ -129,26 +129,49 @@ const getItems = async () => {
   const zones = [{ id: 1000, name: 'mc' }, { id: 1001, name: 'onyxia' }, { id: 1002, name: 'bwl' }, { id: 1003, name: 'zg' }]
   const partitions = [1, 2]
 
-  const characters = await Character.find({ main: true }).populate('userId')
+  const characters = await Character.find().populate('userId')
   for (const character of characters) {
     if (character.userId && character.userId.roles && character.userId.roles.includes('member')) {
-      for (const zone of zones) {
-        for (const partition of partitions) {
-          console.log(`Loading data for user ${character.name} from zone ${zone.name} and partition ${partition}`)
-          const result = await axios.get(encodeURI(`https://classic.warcraftlogs.com:443/v1/parses/character/${character.name}/Sulfuron/EU?zone=${zone.id}&partition=${partition}&api_key=${process.env.WARCRAFTLOGS_API_KEY}`))
-          for (const encounter of result.data) {
-            for (const indexGear in encounter.gear) {
-              if (indexGear === '3') continue
-              const gear = encounter.gear[indexGear]
+      try {
+        for (const zone of zones) {
+          for (const partition of partitions) {
+            console.log(`Loading data for user ${character.name} from zone ${zone.name} and partition ${partition}`)
+            const result = await axios.get(encodeURI(`https://classic.warcraftlogs.com:443/v1/parses/character/${character.name}/Sulfuron/EU?zone=${zone.id}&partition=${partition}&api_key=${process.env.WARCRAFTLOGS_API_KEY}`))
+            for (const encounter of result.data) {
+              for (const indexGear in encounter.gear) {
+                if (indexGear === '3') continue
+                const gear = encounter.gear[indexGear]
 
-              if (gear.id === null || gear.id === 0) continue
-              const itemSlots = ['head', 'neck', 'shoulder', 'empty', 'chest', 'waist', 'legs', 'feet', 'wrist', 'hands', 'finger', 'finger', 'trinket', 'trinket', 'back', 'mainHand', 'offHand', 'ranged']
-              const item = { wid: gear.id, slot: itemSlots[indexGear], characterId: character._id, date: encounter.startTime, zone: zone.name, boss: encounter.encounterName }
-              await Item.updateOne(item, item, { new: true, upsert: true })
+                if (gear.id === null || gear.id === 0) continue
+                const itemSlots = ['head', 'neck', 'shoulder', 'empty', 'chest', 'waist', 'legs', 'feet', 'wrist', 'hands', 'finger', 'finger', 'trinket', 'trinket', 'back', 'mainHand', 'offHand', 'ranged']
+
+                const item = await Item.findOne({ wid: gear.id, characterId: character._id })
+                if (item === null) {
+                  await new Item({
+                    wid: gear.id,
+                    slot: itemSlots[indexGear],
+                    characterId: character._id,
+                    firstDate: encounter.startTime,
+                    lastDate: encounter.startTime
+                  }).save()
+                } else {
+                  const date = moment(encounter.startTime)
+                  if (date.isBefore(moment(item.firstDate))) {
+                    item.firstDate = date
+                    await item.save()
+                  }
+                  if (date.isAfter(moment(item.lastDate))) {
+                    item.lastDate = date
+                    await item.save()
+                  }
+                }
+              }
             }
+            await sleep(200)
           }
-          await sleep(200)
         }
+      } catch (e) {
+        console.log(e)
       }
     }
   }

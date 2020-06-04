@@ -1,4 +1,4 @@
-const { Raid, Registration, RegistrationLog, Character } = require('../models')
+const { Raid, Registration, RegistrationLog, Character, User } = require('../models')
 const moment = require('moment')
 const mongoose = require('mongoose')
 const { sendMessage } = require('../lib/discordWebhook')
@@ -95,6 +95,11 @@ async function createRegistration (ctx) {
       raidId: ctx.request.body.raidId
     })
 
+    ctx.app.io.to(registration.raidId).emit('ACTION', {
+      type: 'GET_MISSING_REGISTRATIONS',
+      raidId: registration.raidId
+    })
+
     ctx.noContent()
   } else {
     ctx.throw(400)
@@ -119,6 +124,11 @@ async function updateRegistration (ctx) {
 
   ctx.app.io.to(registration.raidId).emit('ACTION', {
     type: 'GET_REGISTRATION_LOGS',
+    raidId: registration.raidId
+  })
+
+  ctx.app.io.to(registration.raidId).emit('ACTION', {
+    type: 'GET_MISSING_REGISTRATIONS',
     raidId: registration.raidId
   })
 
@@ -153,6 +163,21 @@ async function getRegistrationLogs (ctx) {
   }
 }
 
+async function missingRegistrations (ctx) {
+  const registrations = await Registration.find({ raidId: ctx.params.id })
+  const missingUsers = []
+  const users = await User.find({ roles: 'member' })
+
+  for (const user of users) {
+    let isRegistered = false
+    for (const registration of registrations) {
+      if (registration.userId.toString() === user._id.toString() && registration.status) { isRegistered = true }
+    }
+    if (!isRegistered) missingUsers.push(user.username)
+  }
+  ctx.ok(missingUsers)
+}
+
 module.exports = {
   getNextRaids,
   createRaid,
@@ -162,5 +187,6 @@ module.exports = {
   createRegistration,
   updateRegistration,
   getRegistrations,
-  getRegistrationLogs
+  getRegistrationLogs,
+  missingRegistrations
 }

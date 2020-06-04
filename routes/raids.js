@@ -12,5 +12,5 @@ router.del('/:id', (ctx, next) => Auth.authenticate(ctx, next, ['modify_raid']),
 router.post('/', (ctx, next) => Auth.authenticate(ctx, next, ['modify_raid']), Raids.createRaid)
 router.post('/registration', (ctx, next) => Auth.authenticate(ctx, next, ['member', 'guest']), Raids.createRegistration)
 router.put('/registration/:id', (ctx, next) => Auth.authenticate(ctx, next, ['modify_raid']), Raids.updateRegistration)
-
+router.get('/:id/missing-registrations', (ctx, next) => Auth.authenticate(ctx, next, ['member', 'guest']), Raids.missingRegistrations)
 module.exports = router.routes()
