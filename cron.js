@@ -22,7 +22,7 @@ module.exports = {
     new CronJob('0 0 6 * * *', async () => {
       await getPresences()
     }, null, true, 'Europe/Paris')
-    // await getItems()
+    await getItems()
     new CronJob('0 0 7 * * *', async () => {
       await getItems()
     }, null, true, 'Europe/Paris')
@@ -143,7 +143,7 @@ const getItems = async () => {
                 const gear = encounter.gear[indexGear]
 
                 if (gear.id === null || gear.id === 0) continue
-                const itemSlots = ['head', 'neck', 'shoulder', 'empty', 'chest', 'waist', 'legs', 'feet', 'wrist', 'hands', 'finger', 'finger', 'trinket', 'trinket', 'back', 'mainHand', 'offHand', 'ranged']
+                const itemSlots = ['head', 'neck', 'shoulder', 'empty', 'chest', 'waist', 'legs', 'feet', 'wrist', 'hands', 'finger', 'finger', 'trinket', 'trinket', 'back', 'weapon', 'weapon', 'ranged']
 
                 const item = await Item.findOne({ wid: gear.id, characterId: character._id })
                 if (item === null) {

@@ -23,7 +23,7 @@ const itemSchema = new mongoose.Schema({
   characterId: { type: mongoose.ObjectId, index: true, required: true, ref: 'Character' },
   firstDate: { type: Date, required: true, index: true },
   lastDate: { type: Date, required: true, index: true },
-  slot: { type: String, enum: ['head', 'neck', 'shoulder', 'chest', 'waist', 'legs', 'feet', 'wrist', 'hands', 'finger', 'trinket', 'back', 'mainHand', 'offHand', 'ranged'], required: true, index: true }
+  slot: { type: String, enum: ['head', 'neck', 'shoulder', 'chest', 'waist', 'legs', 'feet', 'wrist', 'hands', 'finger', 'trinket', 'back', 'weapon', 'ranged'], required: true, index: true }
 })
 const Item = mongoose.model('Item', itemSchema)
 
