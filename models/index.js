@@ -111,6 +111,17 @@ const loot = new mongoose.Schema({
 
 const Loot = mongoose.model('Loot', loot)
 
+const enchant = new mongoose.Schema({
+  date: { type: Date, index: true, required: true },
+  instance: { type: String, index: true, required: true },
+  enchantId: { type: Number, required: true },
+  wid: { type: Number, required: true },
+  name: { type: String, required: true },
+  slot: { type: String, required: true }
+})
+
+const Enchant = mongoose.model('Enchant', enchant)
+
 module.exports = {
   Item,
   Character,
@@ -122,5 +133,6 @@ module.exports = {
   BankItemRequest,
   BankItemLog,
   Presence,
-  Loot
+  Loot,
+  Enchant
 }
