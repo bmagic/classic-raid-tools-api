@@ -1,12 +1,21 @@
-const { Character, User } = require('../models')
+const { Character } = require('../models')
 async function getCharacters (ctx) {
-  const characters = await Character.find().sort('name')
+  const main = ctx.request.query.main || true
+  const roles = ctx.request.query.roles.split(',') || ['member']
+  const characters = await Character.find({ main: main }).sort('name').populate({
+    path: 'userId',
+    match: { roles: { $in: roles } }
+  })
   const result = []
-  for (const index in characters) {
-    const character = characters[index]
-    const user = await User.findOne({ _id: character.userId })
-    if (user && user.roles.includes('member')) {
-      result.push({ _id: character._id, userId: character.userId, name: character.name, spec: character.spec, class: character.class, username: user.username, main: character.main })
+  for (const character of characters) {
+    if (character.userId) {
+      result.push({
+        _id: character._id,
+        name: character.name,
+        spec: character.spec,
+        class: character.class,
+        username: character.userId.username
+      })
     }
   }
   ctx.ok(result)

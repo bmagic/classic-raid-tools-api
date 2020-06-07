@@ -95,7 +95,7 @@ async function createRegistration (ctx) {
       raidId: ctx.request.body.raidId
     })
 
-    ctx.app.io.to(registration.raidId).emit('ACTION', {
+    ctx.app.io.to(ctx.request.body.raidId).emit('ACTION', {
       type: 'GET_MISSING_REGISTRATIONS',
       raidId: registration.raidId
     })
@@ -131,6 +131,31 @@ async function updateRegistration (ctx) {
     type: 'GET_MISSING_REGISTRATIONS',
     raidId: registration.raidId
   })
+
+  ctx.noContent()
+}
+
+async function deleteRegistration (ctx) {
+  const registration = await Registration.findOne({ _id: ctx.params.id }).populate('characterId')
+
+  await Registration.deleteOne({ _id: ctx.params.id })
+  await new RegistrationLog({ date: new Date(), raidId: registration.raidId, characterName: registration.characterId.name, status: 'delete', favorite: registration.favorite, validated: registration.validated, userId: ctx.user.id }).save()
+
+  ctx.app.io.to(registration.raidId).emit('ACTION', {
+    type: 'GET_REGISTRATIONS',
+    raidId: registration.raidId
+  })
+
+  ctx.app.io.to(registration.raidId).emit('ACTION', {
+    type: 'GET_REGISTRATION_LOGS',
+    raidId: registration.raidId
+  })
+
+  ctx.app.io.to(registration.raidId).emit('ACTION', {
+    type: 'GET_MISSING_REGISTRATIONS',
+    raidId: registration.raidId
+  })
+
 
   ctx.noContent()
 }
@@ -188,5 +213,6 @@ module.exports = {
   updateRegistration,
   getRegistrations,
   getRegistrationLogs,
-  missingRegistrations
+  missingRegistrations,
+  deleteRegistration
 }
