@@ -20,10 +20,11 @@ const Presence = mongoose.model('Presence', presenceSchema)
 
 const itemSchema = new mongoose.Schema({
   wid: { type: Number, index: true, required: true },
+  enchantId: { type: Number, index: true },
   characterId: { type: mongoose.ObjectId, index: true, required: true, ref: 'Character' },
   firstDate: { type: Date, required: true, index: true },
   lastDate: { type: Date, required: true, index: true },
-  slot: { type: String, enum: ['head', 'neck', 'shoulder', 'chest', 'waist', 'legs', 'feet', 'wrist', 'hands', 'finger', 'trinket', 'back', 'weapon', 'ranged'], required: true, index: true }
+  slot: { type: String, required: true, index: true }
 })
 const Item = mongoose.model('Item', itemSchema)
 

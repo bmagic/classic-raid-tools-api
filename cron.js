@@ -25,9 +25,9 @@ module.exports = {
       await getItems()
     }, null, true, 'Europe/Paris')
     // await getEnchantsBuffs()
-    new CronJob('0 30 7 * * *', async () => {
-      await getEnchantsBuffs()
-    }, null, true, 'Europe/Paris')
+    // new CronJob('0 30 7 * * *', async () => {
+    //   await getEnchantsBuffs()
+    // }, null, true, 'Europe/Paris')
   }
 }
 
