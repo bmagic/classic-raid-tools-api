@@ -117,7 +117,7 @@ const enchant = new mongoose.Schema({
   instance: { type: String, index: true, required: true },
   enchantId: { type: Number, required: true },
   wid: { type: Number, required: true },
-  name: { type: String, required: true },
+  characterId: { type: mongoose.ObjectId, index: true, required: true, ref: 'Character' },
   slot: { type: String, required: true }
 })
 

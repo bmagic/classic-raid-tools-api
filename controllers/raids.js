@@ -97,7 +97,7 @@ async function createRegistration (ctx) {
 
     ctx.app.io.to(ctx.request.body.raidId).emit('ACTION', {
       type: 'GET_MISSING_REGISTRATIONS',
-      raidId: registration.raidId
+      raidId: ctx.request.body.raidId4e
     })
 
     ctx.noContent()
