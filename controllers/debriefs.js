@@ -1,7 +1,9 @@
-const { Enchant } = require('../models')
+const { Enchant, Buff } = require('../models')
 async function getDebrief (ctx) {
   const enchants = await Enchant.find({ date: ctx.params.date, instance: ctx.params.instance }).populate('characterId')
-  ctx.ok({ enchants: enchants })
+  const buffs = await Buff.find({ date: ctx.params.date, instance: ctx.params.instance }).populate('characterId')
+
+  ctx.ok({ enchants: enchants, buffs: buffs })
 }
 
 async function getRaids (ctx) {

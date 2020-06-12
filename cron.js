@@ -24,10 +24,10 @@ module.exports = {
     new CronJob('0 0 7 * * *', async () => {
       await getItems()
     }, null, true, 'Europe/Paris')
-    // await getEnchantsBuffs()
-    // new CronJob('0 30 7 * * *', async () => {
-    //   await getEnchantsBuffs()
-    // }, null, true, 'Europe/Paris')
+    await getEnchantsBuffs()
+    new CronJob('0 30 7 * * *', async () => {
+      await getEnchantsBuffs()
+    }, null, true, 'Europe/Paris')
   }
 }
 

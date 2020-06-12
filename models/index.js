@@ -123,6 +123,15 @@ const enchant = new mongoose.Schema({
 
 const Enchant = mongoose.model('Enchant', enchant)
 
+const buff = new mongoose.Schema({
+  date: { type: Date, index: true, required: true },
+  instance: { type: String, index: true, required: true },
+  wid: { type: Number, required: true },
+  characterId: { type: mongoose.ObjectId, index: true, required: true, ref: 'Character' }
+})
+
+const Buff = mongoose.model('Buff', buff)
+
 module.exports = {
   Item,
   Character,
@@ -135,5 +144,6 @@ module.exports = {
   BankItemLog,
   Presence,
   Loot,
-  Enchant
+  Enchant,
+  Buff
 }
