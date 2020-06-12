@@ -57,10 +57,14 @@ async function getRaid (ctx) {
 
 async function updateRaid (ctx) {
   await Raid.updateOne({ _id: ctx.params.id }, ctx.request.body)
-  ctx.app.io.to(ctx.params.id).emit('ACTION', {
-    type: 'GET_RAID',
-    id: ctx.params.id
-  })
+  try {
+    ctx.app.io.to(ctx.params.id).emit('ACTION', {
+      type: 'GET_RAID',
+      id: ctx.params.id
+    })
+  } catch (e) {
+    console.error(e)
+  }
   ctx.noContent()
 }
 
@@ -85,20 +89,24 @@ async function createRegistration (ctx) {
 
     await new RegistrationLog({ date: new Date(), raidId: ctx.request.body.raidId, characterName: character.name, status: status, favorite: favorite, validated: validated, userId: ctx.user.id }).save()
 
-    ctx.app.io.to(ctx.request.body.raidId).emit('ACTION', {
-      type: 'GET_REGISTRATIONS',
-      raidId: ctx.request.body.raidId
-    })
+    try {
+      ctx.app.io.to(ctx.request.body.raidId).emit('ACTION', {
+        type: 'GET_REGISTRATIONS',
+        raidId: ctx.request.body.raidId
+      })
 
-    ctx.app.io.to(ctx.request.body.raidId).emit('ACTION', {
-      type: 'GET_REGISTRATION_LOGS',
-      raidId: ctx.request.body.raidId
-    })
+      ctx.app.io.to(ctx.request.body.raidId).emit('ACTION', {
+        type: 'GET_REGISTRATION_LOGS',
+        raidId: ctx.request.body.raidId
+      })
 
-    ctx.app.io.to(ctx.request.body.raidId).emit('ACTION', {
-      type: 'GET_MISSING_REGISTRATIONS',
-      raidId: ctx.request.body.raidId4e
-    })
+      ctx.app.io.to(ctx.request.body.raidId).emit('ACTION', {
+        type: 'GET_MISSING_REGISTRATIONS',
+        raidId: ctx.request.body.raidId
+      })
+    } catch (e) {
+      console.error(e)
+    }
 
     ctx.noContent()
   } else {
@@ -117,20 +125,24 @@ async function updateRegistration (ctx) {
 
   await new RegistrationLog({ date: new Date(), raidId: registration.raidId, characterName: registration.characterId.name, status: registration.status, favorite: registration.favorite, validated: registration.validated, userId: ctx.user.id }).save()
 
-  ctx.app.io.to(registration.raidId).emit('ACTION', {
-    type: 'GET_REGISTRATIONS',
-    raidId: registration.raidId
-  })
+  try {
+    ctx.app.io.to(registration.raidId).emit('ACTION', {
+      type: 'GET_REGISTRATIONS',
+      raidId: registration.raidId
+    })
 
-  ctx.app.io.to(registration.raidId).emit('ACTION', {
-    type: 'GET_REGISTRATION_LOGS',
-    raidId: registration.raidId
-  })
+    ctx.app.io.to(registration.raidId).emit('ACTION', {
+      type: 'GET_REGISTRATION_LOGS',
+      raidId: registration.raidId
+    })
 
-  ctx.app.io.to(registration.raidId).emit('ACTION', {
-    type: 'GET_MISSING_REGISTRATIONS',
-    raidId: registration.raidId
-  })
+    ctx.app.io.to(registration.raidId).emit('ACTION', {
+      type: 'GET_MISSING_REGISTRATIONS',
+      raidId: registration.raidId
+    })
+  } catch (e) {
+    console.error(e)
+  }
 
   ctx.noContent()
 }
@@ -141,21 +153,24 @@ async function deleteRegistration (ctx) {
   await Registration.deleteOne({ _id: ctx.params.id })
   await new RegistrationLog({ date: new Date(), raidId: registration.raidId, characterName: registration.characterId.name, status: 'delete', favorite: registration.favorite, validated: registration.validated, userId: ctx.user.id }).save()
 
-  ctx.app.io.to(registration.raidId).emit('ACTION', {
-    type: 'GET_REGISTRATIONS',
-    raidId: registration.raidId
-  })
+  try {
+    ctx.app.io.to(registration.raidId).emit('ACTION', {
+      type: 'GET_REGISTRATIONS',
+      raidId: registration.raidId
+    })
 
-  ctx.app.io.to(registration.raidId).emit('ACTION', {
-    type: 'GET_REGISTRATION_LOGS',
-    raidId: registration.raidId
-  })
+    ctx.app.io.to(registration.raidId).emit('ACTION', {
+      type: 'GET_REGISTRATION_LOGS',
+      raidId: registration.raidId
+    })
 
-  ctx.app.io.to(registration.raidId).emit('ACTION', {
-    type: 'GET_MISSING_REGISTRATIONS',
-    raidId: registration.raidId
-  })
-
+    ctx.app.io.to(registration.raidId).emit('ACTION', {
+      type: 'GET_MISSING_REGISTRATIONS',
+      raidId: registration.raidId
+    })
+  } catch (e) {
+    console.error(e)
+  }
 
   ctx.noContent()
 }
