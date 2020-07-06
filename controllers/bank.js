@@ -109,7 +109,7 @@ async function setFree (ctx) {
 }
 
 async function getLogs (ctx) {
-  const result = await BankItemLog.find().sort({ _id: -1 }).limit(500)
+  const result = await BankItemLog.find().sort({ _id: -1 }).limit(200)
   ctx.ok(result)
 }
 

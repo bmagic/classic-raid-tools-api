@@ -20,6 +20,7 @@
     "@koa/cors": "^3.0.0",
     "axios": "^0.19.2",
     "cron": "^1.8.2",
+    "deep-diff": "^1.0.2",
     "fast-xml-parser": "^3.17.3",
     "form-data": "^3.0.0",
     "jose": "^1.27.0",

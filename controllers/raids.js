@@ -29,7 +29,7 @@ async function createRaid (ctx) {
   if (ctx.request.body && ctx.request.body.date && ctx.request.body.instance) {
     const raid = await new Raid({ date: new Date(ctx.request.body.date), instance: ctx.request.body.instance }).save()
 
-    const content = `<@&678625612591530003> le raid ${raid.instance} du ${moment(raid.date).format('dddd DD MMMM HH:mm')} vient d'être créé, vous pouvez vous inscrire : https://classicrt.bmagic.fr/raid/${raid._id}`
+    const content = `<@&678625612591530003> le raid ${raid.instance} du ${moment(raid.date).format('dddd DD MMMM HH:mm')} vient d'être créé, vous pouvez vous inscrire : ${process.env.FRONT_URL}/raid/${raid._id}`
     await sendMessage('raid', content)
 
     ctx.noContent()
@@ -206,7 +206,7 @@ async function getRegistrationLogs (ctx) {
 async function missingRegistrations (ctx) {
   const registrations = await Registration.find({ raidId: ctx.params.id })
   const missingUsers = []
-  const users = await User.find({ roles: 'member' })
+  const users = await User.find({ $or: [{ roles: 'member' }, { roles: 'apply' }] })
 
   for (const user of users) {
     let isRegistered = false

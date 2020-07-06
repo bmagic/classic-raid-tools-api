@@ -33,9 +33,9 @@ module.exports = {
 
 const checkRaids = async () => {
   try {
-    const raids = await Raid.find({ date: { $gt: moment(), $lte: moment().add(3, 'days') } }).sort('date')
+    const raids = await Raid.find({ main: true, date: { $gt: moment(), $lte: moment().add(3, 'days') } }).sort('date')
 
-    const users = await User.find({ roles: 'member' })
+    const users = await User.find({ $or: [{ roles: 'member' }, { roles: 'apply' }] })
 
     for (const raid of raids) {
       const registrations = await Registration.find({ raidId: raid._id })
@@ -54,9 +54,9 @@ const checkRaids = async () => {
           content += `<@${discordId}> `
         }
         if (missingUsers.length > 1) {
-          content += `vous n'avez pas renseigné vos dispos pour le raid ${raid.instance} du ${moment(raid.date).format('dddd DD MMMM HH:mm')} https://classicrt.bmagic.fr/raid/${raid._id}`
+          content += `vous n'avez pas renseigné vos dispos pour le raid ${raid.instance} du ${moment(raid.date).format('dddd DD MMMM HH:mm')} ${process.env.FRONT_URL}/raid/${raid._id}`
         } else {
-          content += `tu n'as pas renseigné tes dispos pour le raid ${raid.instance} du ${moment(raid.date).format('dddd DD MMMM HH:mm')} https://classicrt.bmagic.fr/raid/${raid._id}`
+          content += `tu n'as pas renseigné tes dispos pour le raid ${raid.instance} du ${moment(raid.date).format('dddd DD MMMM HH:mm')} ${process.env.FRONT_URL}/raid/${raid._id}`
         }
         console.log(`Send discord hook for raid ${raid._id}`)
         await sendMessage('raid', content)

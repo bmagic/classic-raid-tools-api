@@ -4,7 +4,8 @@ const userSchema = new mongoose.Schema({
   username: { type: String },
   email: { type: String },
   discordId: { type: String, index: { unique: true }, required: true },
-  roles: [{ type: String }]
+  roles: [{ type: String }],
+  mdc: { type: String }
 })
 const User = mongoose.model('User', userSchema)
 
@@ -79,7 +80,7 @@ const raidSchema = new mongoose.Schema({
 })
 const Raid = mongoose.model('Raid', raidSchema)
 
-const registration = new mongoose.Schema({
+const registrationSchema = new mongoose.Schema({
   date: { type: Date, required: true },
   userId: { type: mongoose.ObjectId, index: true, required: true },
   raidId: { type: mongoose.ObjectId, index: true, required: true },
@@ -89,9 +90,9 @@ const registration = new mongoose.Schema({
   status: { type: String }
 })
 
-const Registration = mongoose.model('Registration', registration)
+const Registration = mongoose.model('Registration', registrationSchema)
 
-const registrationLog = new mongoose.Schema({
+const registrationLogSchema = new mongoose.Schema({
   date: { type: Date, required: true },
   raidId: { type: mongoose.ObjectId, index: true, required: true },
   characterName: { type: String, required: true },
@@ -100,19 +101,39 @@ const registrationLog = new mongoose.Schema({
   validated: { type: Boolean, required: true },
   userId: { type: mongoose.ObjectId, index: true, required: true, ref: 'User' }
 })
-const RegistrationLog = mongoose.model('RegistrationLog', registrationLog)
+const RegistrationLog = mongoose.model('RegistrationLog', registrationLogSchema)
 
-const loot = new mongoose.Schema({
-  wid: { type: Number, required: true },
+const lootSchema = new mongoose.Schema({
+  wid: { type: Number, index: { unique: true }, required: true },
   instance: { type: String, required: true },
-  boss: { type: Number, required: true },
-  classes: { type: Array, default: [] },
-  comment: { type: String }
+  class: { type: String },
+  subclass: { type: String },
+  slot: { type: String },
+  level: { type: Number },
+  bosses: { type: Array, default: [] },
+  mdcClassSpecs: { type: Object, default: {} },
+  assignText: { type: String },
+  globalText: { type: String }
 })
 
-const Loot = mongoose.model('Loot', loot)
+const Loot = mongoose.model('Loot', lootSchema)
 
-const enchant = new mongoose.Schema({
+const lootNeedSchema = new mongoose.Schema({
+  wid: { type: Number, index: true, required: true },
+  userId: { type: mongoose.ObjectId, index: true, required: true, ref: 'User' },
+  type: { type: String }
+
+})
+const LootNeed = mongoose.model('LootNeed', lootNeedSchema)
+
+const lootLogSchema = new mongoose.Schema({
+  userName: { type: String, required: true },
+  log: { type: String, required: true },
+  date: { type: Date, required: true }
+})
+const LootLog = mongoose.model('LootLog', lootLogSchema)
+
+const enchantSchema = new mongoose.Schema({
   date: { type: Date, index: true, required: true },
   instance: { type: String, index: true, required: true },
   enchantId: { type: Number, required: true },
@@ -121,16 +142,16 @@ const enchant = new mongoose.Schema({
   slot: { type: String, required: true }
 })
 
-const Enchant = mongoose.model('Enchant', enchant)
+const Enchant = mongoose.model('Enchant', enchantSchema)
 
-const buff = new mongoose.Schema({
+const buffSchema = new mongoose.Schema({
   date: { type: Date, index: true, required: true },
   instance: { type: String, index: true, required: true },
   wid: { type: Number, required: true },
   characterId: { type: mongoose.ObjectId, index: true, required: true, ref: 'Character' }
 })
 
-const Buff = mongoose.model('Buff', buff)
+const Buff = mongoose.model('Buff', buffSchema)
 
 module.exports = {
   Item,
@@ -144,6 +165,8 @@ module.exports = {
   BankItemLog,
   Presence,
   Loot,
+  LootNeed,
+  LootLog,
   Enchant,
   Buff
 }

@@ -10,8 +10,9 @@ async function getItems (ctx) {
   const wClass = ctx.request.query.class
   if (spec === undefined) ctx.throw(400)
 
-  const filter = { spec: spec, main: true }
+  const filter = { main: true }
   if (wClass) filter.class = wClass
+  if (spec && spec !== '') filter.spec = spec
   const characters = await Character.find(filter).sort({ spec: 1, class: 1, name: 1 }).populate('userId')
 
   const result = {}

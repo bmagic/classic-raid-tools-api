@@ -1,0 +1,16 @@
+const Router = require('koa-router')
+const router = new Router()
+const Loots = require('../controllers/loots')
+const Auth = require('../controllers/auth')
+router.put('/need', (ctx, next) => Auth.authenticate(ctx, next, ['member']), Loots.createLootNeed)
+router.post('/', (ctx, next) => Auth.authenticate(ctx, next, ['modify_raid']), Loots.createLoot)
+router.put('/:id', (ctx, next) => Auth.authenticate(ctx, next, ['modify_raid']), Loots.updateLoot)
+router.del('/:id', (ctx, next) => Auth.authenticate(ctx, next, ['modify_raid']), Loots.deleteLoot)
+router.put('/:id/mdc', (ctx, next) => Auth.authenticate(ctx, next, ['member']), Loots.setLootMdC)
+router.put('/:id/assign-text', (ctx, next) => Auth.authenticate(ctx, next, ['member']), Loots.setAssignText)
+
+router.get('/logs', (ctx, next) => Auth.authenticate(ctx, next, ['modify_raid']), Loots.getLootLogs)
+router.get('/needs', (ctx, next) => Auth.authenticate(ctx, next, ['member']), Loots.getLootsNeeds)
+router.get('/', (ctx, next) => Auth.authenticate(ctx, next, ['member', 'modify_raid']), Loots.getLoots)
+
+module.exports = router.routes()

@@ -57,7 +57,7 @@ async function getUsers (ctx) {
   for (const userIndex in users) {
     const user = users[userIndex]
     const characters = await Character.find({ userId: user._id })
-    usersResult.push({ _id: user._id, email: user.email, roles: user.roles, characters: characters, username: user.username })
+    usersResult.push({ _id: user._id, email: user.email, roles: user.roles, characters: characters, username: user.username, mdc: user.mdc })
   }
   ctx.ok(usersResult)
 }
@@ -72,15 +72,19 @@ async function updateUser (ctx) {
 }
 
 async function setRoles (ctx) {
-  if (ctx.request.body && ctx.request.body.id && ctx.request.body.roles) {
-    const user = await User.findOne({ _id: ctx.request.body.id })
-    user.roles = ctx.request.body.roles
-    user.save()
-    ctx.noContent()
-  } else {
-    ctx.throw(400)
-  }
+  const user = await User.findOne({ _id: ctx.params.id })
+  user.roles = ctx.request.body.roles
+  user.save()
+  ctx.noContent()
 }
+
+async function setMdC (ctx) {
+  const user = await User.findOne({ _id: ctx.params.id })
+  user.mdc = ctx.request.body.mdc
+  user.save()
+  ctx.noContent()
+}
+
 async function logout (ctx) {
   ctx.cookies.set('token', null, {
     maxAge: 0
@@ -96,6 +100,7 @@ module.exports = {
   setMainCharacter,
   getUsers,
   setRoles,
+  setMdC,
   updateUser,
   logout
 }
