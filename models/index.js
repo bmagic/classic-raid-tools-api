@@ -153,6 +153,19 @@ const buffSchema = new mongoose.Schema({
 
 const Buff = mongoose.model('Buff', buffSchema)
 
+const availabilitySchema = new mongoose.Schema({
+  monday: { type: String },
+  tuesday: { type: String },
+  wednesday: { type: String },
+  thursday: { type: String },
+  friday: { type: String },
+  saturday: { type: String },
+  sunday: { type: String },
+  userId: { type: mongoose.ObjectId, index: true, required: true, ref: 'User' }
+})
+
+const Availability = mongoose.model('Availability', availabilitySchema)
+
 module.exports = {
   Item,
   Character,
@@ -168,5 +181,6 @@ module.exports = {
   LootNeed,
   LootLog,
   Enchant,
-  Buff
+  Buff,
+  Availability
 }

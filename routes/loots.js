@@ -8,9 +8,10 @@ router.put('/:id', (ctx, next) => Auth.authenticate(ctx, next, ['modify_raid']),
 router.del('/:id', (ctx, next) => Auth.authenticate(ctx, next, ['modify_raid']), Loots.deleteLoot)
 router.put('/:id/mdc', (ctx, next) => Auth.authenticate(ctx, next, ['member']), Loots.setLootMdC)
 router.put('/:id/assign-text', (ctx, next) => Auth.authenticate(ctx, next, ['member']), Loots.setAssignText)
-
+router.del('/needs/:id', (ctx, next) => Auth.authenticate(ctx, next, ['member']), Loots.deleteUserLootNeed)
 router.get('/logs', (ctx, next) => Auth.authenticate(ctx, next, ['modify_raid']), Loots.getLootLogs)
 router.get('/needs', (ctx, next) => Auth.authenticate(ctx, next, ['member']), Loots.getLootsNeeds)
+router.get('/user/needs', (ctx, next) => Auth.authenticate(ctx, next, ['member']), Loots.getUserLootsNeeds)
 router.get('/', (ctx, next) => Auth.authenticate(ctx, next, ['member', 'modify_raid']), Loots.getLoots)
 
 module.exports = router.routes()

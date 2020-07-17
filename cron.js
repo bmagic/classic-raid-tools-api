@@ -1,7 +1,9 @@
 const CronJob = require('cron').CronJob
-const { Raid, User, Registration } = require('./models/index')
+const { Raid, User, Registration, LootNeed, Item } = require('./models/index')
 const { sendMessage } = require('./lib/discordWebhook')
 const moment = require('moment')
+const axios = require('axios')
+const parser = require('fast-xml-parser')
 
 const { getItems, getPresences, getEnchantsBuffs } = require('./lib/warcraftLogsCron')
 const { getBankItemsPrices } = require('./lib/nexusHubCron')
@@ -28,12 +30,16 @@ module.exports = {
     new CronJob('0 30 7 * * *', async () => {
       await getEnchantsBuffs()
     }, null, true, 'Europe/Paris')
+    // await checkLoots()
+    new CronJob('0 0 8  * * *', async () => {
+      await checkLoots()
+    }, null, true, 'Europe/Paris')
   }
 }
 
 const checkRaids = async () => {
   try {
-    const raids = await Raid.find({ main: true, date: { $gt: moment(), $lte: moment().add(3, 'days') } }).sort('date')
+    const raids = await Raid.find({ main: true, date: { $gt: moment(), $lte: moment().add(6, 'days') } }).sort('date')
 
     const users = await User.find({ $or: [{ roles: 'member' }, { roles: 'apply' }] })
 
@@ -60,6 +66,35 @@ const checkRaids = async () => {
         }
         console.log(`Send discord hook for raid ${raid._id}`)
         await sendMessage('raid', content)
+      }
+    }
+  } catch (e) {
+    console.log(e)
+  }
+}
+
+const checkLoots = async () => {
+  try {
+    console.log('Check loots')
+    const lootsNeed = await LootNeed.find()
+    for (const lootNeed of lootsNeed) {
+      let found = false
+      const items = await Item.find({ wid: lootNeed.wid }).populate('characterId')
+      for (const item of items) {
+        if (lootNeed.userId.toString() === item.characterId.userId.toString() && item.characterId.main === true) {
+          found = true
+        }
+      }
+      if (found) {
+        const user = await User.findOne({ _id: lootNeed.userId })
+        const wowheadXmlInfos = await axios.get(`https://fr.classic.wowhead.com/item=${lootNeed.wid}&xml`)
+        const wowheadJsonInfos = parser.parse(wowheadXmlInfos.data)
+
+        if (wowheadJsonInfos && wowheadJsonInfos.wowhead && wowheadJsonInfos.wowhead.item && wowheadJsonInfos.wowhead.item.name) {
+          const content = `<@${user.discordId}> l'item "${wowheadJsonInfos.wowhead.item.name}" a été retiré de ta wishlist car tu l'as équipé au moins une fois.`
+          await sendMessage('default', content)
+        }
+        lootNeed.delete()
       }
     }
   } catch (e) {
