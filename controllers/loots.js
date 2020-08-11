@@ -60,7 +60,12 @@ async function getLoots (ctx) {
   const resultClone = JSON.parse(JSON.stringify(result))
   for (const loot of resultClone) {
     const resultLootNeeds = await LootNeed.find({ wid: loot.wid }).populate('userId')
-    loot.lootNeeds = resultLootNeeds
+
+    const lootNeeds = []
+    for (const need of resultLootNeeds) {
+      if (need.userId && need.userId.roles && need.userId.roles.includes('member')) { lootNeeds.push(need) }
+    }
+    loot.lootNeeds = lootNeeds
   }
   ctx.ok(resultClone)
 }
@@ -125,6 +130,23 @@ async function getLootsNeeds (ctx) {
   ctx.ok(result)
 }
 
+async function getUserLootsNeeds (ctx) {
+  const result = []
+
+  const resultLootsNeeds = await LootNeed.find({ userId: ctx.user.id }).sort({ wid: 1 })
+  for (const need of resultLootsNeeds) {
+    const loot = await Loot.findOne({ wid: need.wid })
+    if (loot === null) continue
+    result.push({ _id: need._id, wid: need.wid, type: need.type, instance: loot.instance, class: loot.class, subclass: loot.subclass })
+  }
+  ctx.ok(result)
+}
+
+async function deleteUserLootNeed (ctx) {
+  await LootNeed.deleteOne({ userId: ctx.user.id, _id: ctx.params.id })
+  ctx.noContent()
+}
+
 module.exports = {
   createLoot,
   updateLoot,
@@ -134,5 +156,7 @@ module.exports = {
   deleteLoot,
   getLootLogs,
   createLootNeed,
-  getLootsNeeds
+  getLootsNeeds,
+  getUserLootsNeeds,
+  deleteUserLootNeed
 }

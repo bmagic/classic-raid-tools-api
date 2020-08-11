@@ -185,7 +185,7 @@ async function getRegistrations (ctx) {
       const registration = registrations[index]
       const character = await Character.findOne({ _id: registration.characterId }).populate('userId')
       if (character !== null && character.userId !== null) {
-        result.push({ _id: registration._id, characterId: character._id, name: character.name, spec: character.spec, class: character.class, main: character.main || false, userId: character.userId._id, username: character.userId.username, status: registration.status, favorite: registration.favorite || false, validated: registration.validated || false })
+        result.push({ _id: registration._id, characterId: character._id, name: character.name, spec: character.spec, class: character.class, main: character.main || false, userId: character.userId._id, username: character.userId.username, roles: character.userId.roles || [], status: registration.status, favorite: registration.favorite || false, validated: registration.validated || false })
       }
     }
     ctx.ok(result)

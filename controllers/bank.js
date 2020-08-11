@@ -44,12 +44,19 @@ async function importData (ctx) {
   const bankItems = await BankItem.find({ character: character })
   const currentDate = new Date()
 
+  const toDeleteItemWids = []
+  for (const bankItem of bankItems) {
+    toDeleteItemWids.push(bankItem.wid)
+  }
+
   // Check diff with bank
   for (const importItem of importItems) {
     let inBank = false
     for (const bankItem of bankItems) {
       if (importItem.wid === bankItem.wid) {
         inBank = true
+
+        toDeleteItemWids.splice(toDeleteItemWids.indexOf(bankItem.wid), 1)
 
         if (importItem.quantity !== bankItem.quantity) {
           await new BankItemLog({ date: currentDate, wid: importItem.wid, character: character, prevQuantity: bankItem.quantity, quantity: importItem.quantity }).save()
@@ -62,6 +69,17 @@ async function importData (ctx) {
     if (!inBank) {
       await new BankItem({ wid: importItem.wid, character: character, quantity: importItem.quantity }).save()
       await new BankItemLog({ date: currentDate, wid: importItem.wid, character: character, prevQuantity: 0, quantity: importItem.quantity }).save()
+    }
+  }
+
+  // Remove old items not found on character
+  for (const toDeleteItemWid of toDeleteItemWids) {
+    const bankItem = await BankItem.findOne({ character: character, wid: toDeleteItemWid })
+    if (bankItem.quantity !== 0) {
+      await new BankItemLog({ date: currentDate, wid: toDeleteItemWid, character: character, prevQuantity: bankItem.quantity, quantity: 0 }).save()
+
+      bankItem.quantity = 0
+      await bankItem.save()
     }
   }
 
