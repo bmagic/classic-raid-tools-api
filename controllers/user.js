@@ -23,6 +23,15 @@ async function createCharacter (ctx) {
   }
 }
 
+async function updateCharacterSpec (ctx) {
+  if (ctx.request.body.spec) {
+    await Character.updateOne({ _id: ctx.params.id, userId: ctx.user.id }, { spec: ctx.request.body.spec })
+    ctx.noContent()
+  } else {
+    ctx.throw(400)
+  }
+}
+
 async function deleteCharacter (ctx) {
   if (ctx.params && ctx.params.id) {
     const talk = await Character.findOne({ _id: ctx.params.id })
@@ -96,6 +105,7 @@ module.exports = {
   getUser,
   getCharacters,
   createCharacter,
+  updateCharacterSpec,
   deleteCharacter,
   setMainCharacter,
   getUsers,
