@@ -80,7 +80,13 @@ const checkLoots = async () => {
     for (const lootNeed of lootsNeed) {
       let found = false
       const items = await Item.find({ wid: lootNeed.wid }).populate('characterId')
+
       for (const item of items) {
+        if (!item.characterId) {
+          console.log(`Item ${item._id} has not a valid character attached to him. I delete it.`)
+          await Item.deleteOne({ _id: item._id })
+          continue
+        }
         if (lootNeed.userId.toString() === item.characterId.userId.toString() && item.characterId.main === true) {
           found = true
         }
