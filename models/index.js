@@ -83,7 +83,7 @@ const Raid = mongoose.model('Raid', raidSchema)
 const registrationSchema = new mongoose.Schema({
   date: { type: Date, required: true },
   userId: { type: mongoose.ObjectId, index: true, required: true },
-  raidId: { type: mongoose.ObjectId, index: true, required: true },
+  raidId: { type: mongoose.ObjectId, index: true, required: true, ref: 'Raid' },
   characterId: { type: mongoose.ObjectId, index: true, required: true, ref: 'Character' },
   validated: { type: Boolean, default: false },
   favorite: { type: Boolean },
