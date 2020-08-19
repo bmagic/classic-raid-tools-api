@@ -196,7 +196,7 @@ async function getRegistrations (ctx) {
 
 async function getRegistrationLogs (ctx) {
   if (ctx.params && ctx.params.id) {
-    const registrationLogs = await RegistrationLog.find({ raidId: ctx.params.id }).populate('userId').sort({ date: -1 }).limit(100)
+    const registrationLogs = await RegistrationLog.find({ raidId: ctx.params.id }).populate('userId').sort({ date: -1 })
     ctx.ok(registrationLogs)
   } else {
     ctx.throw(400)
