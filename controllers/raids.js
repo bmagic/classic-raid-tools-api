@@ -77,6 +77,8 @@ async function createRegistration (ctx) {
 
     if (character === null) ctx.throw(400)
 
+    const raid = await Raid.findOne({ _id: ctx.request.body.raidId })
+    if (raid === null || moment(raid.date).isBefore(moment()))ctx.throw(400)
     const registration = await Registration.findOne({ userId: ctx.user.id, raidId: ctx.request.body.raidId, characterId: ctx.request.body.characterId }).populate('raidId')
     if (registration !== null) {
       if (moment(registration.raidId.date).subtract(1, 'day').isBefore(moment()) && (status === 'ko' || status === 'late')) {
