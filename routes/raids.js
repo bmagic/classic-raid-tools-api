@@ -3,6 +3,7 @@ const router = new Router()
 const Raids = require('../controllers/raids')
 const Auth = require('../controllers/auth')
 
+router.get('/', Auth.authenticate, Raids.getRaids)
 router.get('/next', Auth.authenticate, Raids.getNextRaids)
 router.get('/:id/registrations', (ctx, next) => Auth.authenticate(ctx, next, ['member', 'apply', 'casu', 'guest']), Raids.getRegistrations)
 router.get('/:id/registration-logs', (ctx, next) => Auth.authenticate(ctx, next, ['member', 'apply', 'casu', 'guest']), Raids.getRegistrationLogs)

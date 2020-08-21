@@ -3,6 +3,11 @@ const moment = require('moment')
 const mongoose = require('mongoose')
 const { sendMessage } = require('../lib/discordWebhook')
 
+async function getRaids (ctx) {
+  const raids = await Raid.find().sort({ date: -1 })
+  ctx.ok(raids)
+}
+
 async function getNextRaids (ctx) {
   if (!ctx.user) ctx.throw(401)
   const before = new Date()
@@ -225,6 +230,7 @@ async function missingRegistrations (ctx) {
 }
 
 module.exports = {
+  getRaids,
   getNextRaids,
   createRaid,
   deleteRaid,
