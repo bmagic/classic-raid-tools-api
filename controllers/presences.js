@@ -1,11 +1,14 @@
-const { Presence } = require('../models')
+const { Presence, User } = require('../models')
 
 async function getPresences (ctx) {
   const filter = {}
 
   if (ctx.request.query.instance) { filter.instance = ctx.request.query.instance }
-  const result = await Presence.find(filter).sort({ date: -1 }).populate('userId').populate('characterId').exec()
-  ctx.ok(result)
+  const presences = await Presence.find(filter).sort({ date: -1 }).populate('userId', { _id: 1, username: 1, roles: 1 }).populate('characterId').exec()
+
+  const users = await User.find({ $or: [{ roles: 'member' }, { roles: 'apply' }] }, { _id: 1, username: 1, roles: 1 })
+
+  ctx.ok({ presences: presences, users: users })
 }
 async function createPresence (ctx) {
   await new Presence(ctx.request.body).save()

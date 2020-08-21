@@ -152,7 +152,7 @@ async function updateItemsRequestStatus (ctx) {
 }
 
 async function getItemsRequest (ctx) {
-  const result = await BankItemRequest.find().populate('userId').limit(100).sort({ _id: -1 }).exec()
+  const result = await BankItemRequest.find().populate('userId', { _id: 1, username: 1, roles: 1 }).limit(100).sort({ _id: -1 }).exec()
   ctx.ok(result)
 }
 
