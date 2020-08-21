@@ -80,7 +80,7 @@ async function createRegistration (ctx) {
     const registration = await Registration.findOne({ userId: ctx.user.id, raidId: ctx.request.body.raidId, characterId: ctx.request.body.characterId }).populate('raidId')
     if (registration !== null) {
       if (moment(registration.raidId.date).subtract(1, 'day').isBefore(moment()) && (status === 'ko' || status === 'late')) {
-        const content = `<@&678898787909107722> ${character.name} vient de changer la dispo moins de 24h avant le raid ${process.env.FRONT_URL}/raid/${registration.raidId._id}`
+        const content = `<@&678898787909107722> ${character.name} vient de changer la dispo de ${registration.status === 'bench' ? 'repos' : registration.status} à ${status} moins de 24h avant le raid ${registration.raidId.instance} ${process.env.FRONT_URL}/raid/${registration.raidId._id}`
         await sendMessage('admin', content)
       }
       registration.status = status
