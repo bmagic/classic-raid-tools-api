@@ -5,5 +5,5 @@ const Auth = require('../controllers/auth')
 
 router.get('/character/:id', Auth.authenticate, Items.getCharacterItems)
 router.get('/', Auth.authenticate, Items.getItems)
-
+router.get('/last', Items.getLastItems)
 module.exports = router.routes()

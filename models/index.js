@@ -26,6 +26,13 @@ const itemSchema = new mongoose.Schema({
   firstDate: { type: Date, required: true, index: true },
   lastDate: { type: Date, required: true, index: true },
   slot: { type: String, required: true, index: true }
+}, { toJSON: { virtuals: true } })
+
+itemSchema.virtual('loot', {
+  ref: 'Loot',
+  localField: 'wid',
+  foreignField: 'wid',
+  justOne: true
 })
 const Item = mongoose.model('Item', itemSchema)
 

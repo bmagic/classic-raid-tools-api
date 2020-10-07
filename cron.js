@@ -102,7 +102,7 @@ const checkLoots = async () => {
     // Peau intacte d'Ouro
     20927: [21352, 21332, 21346, 21362],
     // Manchettes de commandement qiraji
-    20928: [21350, 21359, 21365, 21349, 21367, 21333, 21330, 21361],
+    // 20928: [21350, 21359, 21365, 21349, 21367, 21333, 21330, 21361],
     // Carapace du Dieu très ancien
     20929: [21331, 21389, 21364, 21374, 21370],
     // Diadème de Vek'lor
@@ -110,7 +110,7 @@ const checkLoots = async () => {
     // Peau du Grand ver des sables
     20931: [21336, 21356, 21390, 21375, 21368],
     // Manchettes de domination qiraji
-    20932: [21335, 21354, 21373, 21344, 21355, 21338, 21376, 21391, 21388, 21345],
+    // 20932: [21335, 21354, 21373, 21344, 21355, 21338, 21376, 21391, 21388, 21345],
     // Carcasse du Dieu très ancien
     20933: [21334, 21343, 21357, 21351],
     // Oeil de C'Thun

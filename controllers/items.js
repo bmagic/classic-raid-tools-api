@@ -25,8 +25,16 @@ async function getItems (ctx) {
   ctx.ok(result)
 }
 
+async function getLastItems (ctx) {
+  const items = await Item.find({ firstDate: { $gte: new Date((new Date().getTime() - (7 * 24 * 60 * 60 * 1000))) } }).populate('loot').populate({
+    path: 'characterId',
+    match: { main: true }
+  }).sort({ firstDate: -1 })
+  ctx.ok(items)
+}
 
 module.exports = {
   getCharacterItems,
-  getItems
+  getItems,
+  getLastItems
 }

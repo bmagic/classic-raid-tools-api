@@ -1,9 +1,15 @@
 const { Presence, User } = require('../models')
 
 async function getPresences (ctx) {
-  const filter = {}
+  let filter = {}
 
-  if (ctx.request.query.instance) { filter.instance = ctx.request.query.instance }
+  if (ctx.request.query.instance) {
+    const instances = ctx.request.query.instance.split(' ')
+    filter = { $or: [] }
+    for (const instance of instances) {
+      filter.$or.push({ instance: instance })
+    }
+  }
   const presences = await Presence.find(filter).sort({ date: -1 }).populate('userId', { _id: 1, username: 1, roles: 1 }).populate('characterId').exec()
 
   const users = await User.find({ $or: [{ roles: 'member' }, { roles: 'apply' }] }, { _id: 1, username: 1, roles: 1 })
