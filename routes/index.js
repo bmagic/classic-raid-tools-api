@@ -12,6 +12,5 @@ module.exports = (router) => {
   router.use('/debriefs', require('./debriefs'))
   router.use('/loots', require('./loots'))
   router.use('/availabilities', require('./availabilities'))
-
-
+  router.use('/professions', require('./professions'))
 }

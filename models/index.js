@@ -173,6 +173,13 @@ const availabilitySchema = new mongoose.Schema({
 
 const Availability = mongoose.model('Availability', availabilitySchema)
 
+const professionRecipe = new mongoose.Schema({
+  characterName: { type: String, index: true, required: true },
+  wid: { type: Number, index: true, required: true },
+  profession: { type: String, index: true, required: true }
+})
+const ProfessionRecipe = mongoose.model('ProfessionRecipe', professionRecipe)
+
 module.exports = {
   Item,
   Character,
@@ -189,5 +196,6 @@ module.exports = {
   LootLog,
   Enchant,
   Buff,
-  Availability
+  Availability,
+  ProfessionRecipe
 }
