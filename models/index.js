@@ -180,6 +180,12 @@ const professionRecipe = new mongoose.Schema({
 })
 const ProfessionRecipe = mongoose.model('ProfessionRecipe', professionRecipe)
 
+const instanceStats = new mongoose.Schema({
+  characterId: { type: mongoose.ObjectId, index: true, required: true, ref: 'Character' },
+  stats: { type: Object, required: true },
+})
+const InstanceStats = mongoose.model('InstanceStats', instanceStats)
+
 module.exports = {
   Item,
   Character,
@@ -197,5 +203,6 @@ module.exports = {
   Enchant,
   Buff,
   Availability,
-  ProfessionRecipe
+  ProfessionRecipe,
+  InstanceStats
 }
