@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "@koa/cors": "^3.0.0",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "cron": "^1.8.2",
     "deep-diff": "^1.0.2",
     "fast-xml-parser": "^3.17.3",
