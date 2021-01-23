@@ -14,7 +14,7 @@ module.exports = {
     new CronJob('0 0 20 * * *', async () => {
       await checkRaids()
     }, null, true, 'Europe/Paris')
-    // await getBankItemsPrices()
+    await getBankItemsPrices()
     new CronJob('0 0 5 * * *', async () => {
       await getBankItemsPrices()
     }, null, true, 'Europe/Paris')
@@ -34,7 +34,7 @@ module.exports = {
     new CronJob('0 0 8  * * *', async () => {
       await checkLoots()
     }, null, true, 'Europe/Paris')
-    await getInstancesStats()
+    // await getInstancesStats()
     new CronJob('0 30 8  * * *', async () => {
       await getInstancesStats()
     }, null, true, 'Europe/Paris')
