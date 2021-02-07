@@ -48,7 +48,6 @@ async function getProfession (ctx) {
     },
     { $sort: { count: -1 } }
   ])
-
   ctx.ok({ list: listResult, characterNames: characterNamesResult })
 }
 
