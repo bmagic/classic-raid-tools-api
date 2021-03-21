@@ -5,7 +5,7 @@ const moment = require('moment')
 const axios = require('axios')
 const parser = require('fast-xml-parser')
 
-const { getItems, getPresences, getEnchantsBuffs, getInstancesStats } = require('./lib/warcraftLogsCron')
+const { getItems, getPresences, getEnchantsBuffs, getAttendances } = require('./lib/warcraftLogsCron')
 const { getBankItemsPrices } = require('./lib/nexusHubCron')
 
 module.exports = {
@@ -14,7 +14,7 @@ module.exports = {
     new CronJob('0 0 20 * * *', async () => {
       await checkRaids()
     }, null, true, 'Europe/Paris')
-    await getBankItemsPrices()
+    // await getBankItemsPrices()
     new CronJob('0 0 5 * * *', async () => {
       await getBankItemsPrices()
     }, null, true, 'Europe/Paris')
@@ -34,9 +34,9 @@ module.exports = {
     new CronJob('0 0 8  * * *', async () => {
       await checkLoots()
     }, null, true, 'Europe/Paris')
-    // await getInstancesStats()
-    new CronJob('0 30 8  * * *', async () => {
-      await getInstancesStats()
+    await getAttendances()
+    new CronJob('0 0 2  * * *', async () => {
+      await getAttendances()
     }, null, true, 'Europe/Paris')
   }
 }

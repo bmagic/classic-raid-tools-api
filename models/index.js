@@ -182,9 +182,19 @@ const ProfessionRecipe = mongoose.model('ProfessionRecipe', professionRecipe)
 
 const instanceStats = new mongoose.Schema({
   characterId: { type: mongoose.ObjectId, index: true, required: true, ref: 'Character' },
-  stats: { type: Object, required: true },
+  stats: { type: Object, required: true }
 })
 const InstanceStats = mongoose.model('InstanceStats', instanceStats)
+
+const attendanceSchema = new mongoose.Schema({
+  character: { type: String },
+  status: { type: String, required: true },
+  buffsCount: { type: Number, required: true },
+  reportId: { type: String, required: true },
+  date: { type: Date, required: true },
+  zone: { type: Number, required: true }
+})
+const Attendance = mongoose.model('Attendance', attendanceSchema)
 
 module.exports = {
   Item,
@@ -204,5 +214,6 @@ module.exports = {
   Buff,
   Availability,
   ProfessionRecipe,
-  InstanceStats
+  InstanceStats,
+  Attendance
 }
