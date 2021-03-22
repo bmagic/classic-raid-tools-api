@@ -1,9 +1,4 @@
 const CronJob = require('cron').CronJob
-const { Raid, User, Registration, LootNeed, Item } = require('./models/index')
-const { sendMessage } = require('./lib/discordWebhook')
-const moment = require('moment')
-const axios = require('axios')
-const parser = require('fast-xml-parser')
 
 const { getItems, getPresences, getEnchantsBuffs, getAttendances } = require('./lib/warcraftLogsCron')
 const { getBankItemsPrices } = require('./lib/nexusHubCron')

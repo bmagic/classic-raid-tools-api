@@ -26,7 +26,7 @@ async function getItems (ctx) {
 }
 
 async function getLastItems (ctx) {
-  const items = await Item.find({ firstDate: { $gte: new Date((new Date().getTime() - (7 * 24 * 60 * 60 * 1000))) } }).populate('loot').populate({
+  const items = await Item.find({ firstDate: { $gte: new Date((new Date().getTime() - (7 * 24 * 60 * 60 * 1000))) } }).populate({
     path: 'characterId',
     match: { main: true }
   }).sort({ firstDate: -1 })
