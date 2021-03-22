@@ -75,18 +75,6 @@ const characterSchema = new mongoose.Schema({
 })
 const Character = mongoose.model('Character', characterSchema)
 
-const raidSchema = new mongoose.Schema({
-  date: { type: Date, index: true, required: true },
-  name: { type: String },
-  instance: { type: String, required: true },
-  title: { type: String, default: '' },
-  logs: { type: String, default: '' },
-  gdoc: { type: String, default: '' },
-  infos: { type: String, default: '' },
-  main: { type: Boolean, default: false }
-})
-const Raid = mongoose.model('Raid', raidSchema)
-
 const registrationSchema = new mongoose.Schema({
   date: { type: Date, required: true },
   userId: { type: mongoose.ObjectId, index: true, required: true },
@@ -96,49 +84,6 @@ const registrationSchema = new mongoose.Schema({
   favorite: { type: Boolean },
   status: { type: String }
 })
-
-const Registration = mongoose.model('Registration', registrationSchema)
-
-const registrationLogSchema = new mongoose.Schema({
-  date: { type: Date, required: true },
-  raidId: { type: mongoose.ObjectId, index: true, required: true },
-  characterName: { type: String, required: true },
-  status: { type: String },
-  favorite: { type: Boolean },
-  validated: { type: Boolean, required: true },
-  userId: { type: mongoose.ObjectId, index: true, required: true, ref: 'User' }
-})
-const RegistrationLog = mongoose.model('RegistrationLog', registrationLogSchema)
-
-const lootSchema = new mongoose.Schema({
-  wid: { type: Number, index: { unique: true }, required: true },
-  instance: { type: String, required: true },
-  class: { type: String },
-  subclass: { type: String },
-  slot: { type: String },
-  level: { type: Number },
-  bosses: { type: Array, default: [] },
-  mdcClassSpecs: { type: Object, default: {} },
-  assignText: { type: String },
-  globalText: { type: String }
-})
-
-const Loot = mongoose.model('Loot', lootSchema)
-
-const lootNeedSchema = new mongoose.Schema({
-  wid: { type: Number, index: true, required: true },
-  userId: { type: mongoose.ObjectId, index: true, required: true, ref: 'User' },
-  type: { type: String }
-
-})
-const LootNeed = mongoose.model('LootNeed', lootNeedSchema)
-
-const lootLogSchema = new mongoose.Schema({
-  userName: { type: String, required: true },
-  log: { type: String, required: true },
-  date: { type: Date, required: true }
-})
-const LootLog = mongoose.model('LootLog', lootLogSchema)
 
 const enchantSchema = new mongoose.Schema({
   date: { type: Date, index: true, required: true },
@@ -160,32 +105,12 @@ const buffSchema = new mongoose.Schema({
 
 const Buff = mongoose.model('Buff', buffSchema)
 
-const availabilitySchema = new mongoose.Schema({
-  monday: { type: String },
-  tuesday: { type: String },
-  wednesday: { type: String },
-  thursday: { type: String },
-  friday: { type: String },
-  saturday: { type: String },
-  sunday: { type: String },
-  userId: { type: mongoose.ObjectId, index: true, required: true, ref: 'User' }
-})
-
-const Availability = mongoose.model('Availability', availabilitySchema)
-
 const professionRecipe = new mongoose.Schema({
   characterName: { type: String, index: true, required: true },
   wid: { type: Number, index: true, required: true },
   profession: { type: String, index: true, required: true }
 })
 const ProfessionRecipe = mongoose.model('ProfessionRecipe', professionRecipe)
-
-const instanceStats = new mongoose.Schema({
-  characterId: { type: mongoose.ObjectId, index: true, required: true, ref: 'Character' },
-  stats: { type: Object, required: true }
-})
-const InstanceStats = mongoose.model('InstanceStats', instanceStats)
-
 const attendanceSchema = new mongoose.Schema({
   character: { type: String },
   status: { type: String, required: true },
@@ -200,20 +125,12 @@ module.exports = {
   Item,
   Character,
   User,
-  Raid,
-  Registration,
-  RegistrationLog,
   BankItem,
   BankItemRequest,
   BankItemLog,
   Presence,
-  Loot,
-  LootNeed,
-  LootLog,
   Enchant,
   Buff,
-  Availability,
   ProfessionRecipe,
-  InstanceStats,
   Attendance
 }

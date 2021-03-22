@@ -4,7 +4,7 @@
   "description": "classic Raid Tools Guild API",
   "scripts": {
     "start": "node index.js",
-    "docker": "docker build -t  bmagic/classic-raid-tools-api:latest .; docker push bmagic/classic-raid-tools-api:latest"
+    "docker": "docker buildx build --platform linux/arm64 -t  bmagic/classic-raid-tools-api:latest .; docker push bmagic/classic-raid-tools-api:latest"
   },
   "author": "Bmagic <baptiste@bmagic.fr>",
   "license": "GPL-3.0",

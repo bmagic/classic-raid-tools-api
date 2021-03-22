@@ -4,5 +4,4 @@ const Attendances = require('../controllers/attendances')
 
 router.get('/', Attendances.getAttendances)
 
-
 module.exports = router.routes()

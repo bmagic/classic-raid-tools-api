@@ -3,10 +3,9 @@ const router = new Router()
 const Presences = require('../controllers/presences')
 const Auth = require('../controllers/auth')
 
-router.get('/', (ctx, next) => Auth.authenticate(ctx, next, ['member', 'apply', 'casu']), Presences.getPresences)
-router.get('/stats', (ctx, next) => Auth.authenticate(ctx, next, ['member', 'apply', 'casu']), Presences.getStats)
+router.get('/', (ctx, next) => Auth.authenticate(ctx, next, ['member', 'casu']), Presences.getPresences)
 
-router.del('/:id', (ctx, next) => Auth.authenticate(ctx, next, ['modify_raid']), Presences.deletePresence)
-router.post('/', (ctx, next) => Auth.authenticate(ctx, next, ['modify_raid']), Presences.createPresence)
+router.del('/:id', (ctx, next) => Auth.authenticate(ctx, next, ['admin']), Presences.deletePresence)
+router.post('/', (ctx, next) => Auth.authenticate(ctx, next, ['admin']), Presences.createPresence)
 
 module.exports = router.routes()

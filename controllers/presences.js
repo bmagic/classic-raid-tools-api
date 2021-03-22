@@ -1,4 +1,4 @@
-const { Presence, User, InstanceStats } = require('../models')
+const { Presence, User } = require('../models')
 
 async function getPresences (ctx) {
   let filter = {}
@@ -25,16 +25,8 @@ async function deletePresence (ctx) {
   await Presence.deleteOne({ _id: ctx.params.id }, ctx.request.body)
   ctx.noContent()
 }
-
-async function getStats (ctx) {
-  const result = await InstanceStats.find().populate('characterId', { name: 1, spec: 1, class: 1 }).sort({ 'stats.all': -1 })
-
-  ctx.ok(result)
-}
-
 module.exports = {
   getPresences,
   createPresence,
-  deletePresence,
-  getStats
+  deletePresence
 }
