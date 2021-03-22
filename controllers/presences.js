@@ -12,7 +12,7 @@ async function getPresences (ctx) {
   }
   const presences = await Presence.find(filter).sort({ date: -1 }).populate('userId', { _id: 1, username: 1, roles: 1 }).populate('characterId').exec()
 
-  const users = await User.find({ $or: [{ roles: 'member' }, { roles: 'apply' }] }, { _id: 1, username: 1, roles: 1 })
+  const users = await User.find({ $or: [{ roles: 'member' }] }, { _id: 1, username: 1, roles: 1 })
 
   ctx.ok({ presences: presences, users: users })
 }
